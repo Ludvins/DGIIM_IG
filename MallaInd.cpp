@@ -9,6 +9,9 @@
 #include <tuplasg.hpp>
 #include "MallaInd.hpp"   // declaración de 'ContextoVis'
 
+
+#define MODO_INMEDIATO 0
+
 // *****************************************************************************
 // funciones auxiliares
 
@@ -27,8 +30,7 @@ MallaInd::MallaInd()
 MallaInd::MallaInd( const std::string & nombreIni )
 {
    // 'identificador' puesto a 0 por defecto, 'centro_oc' puesto a (0,0,0)
-   ponerNombre(nombreIni) ;
-
+   ponerNombre(nombreIni) ; 
 }
 
 // -----------------------------------------------------------------------------
@@ -39,22 +41,46 @@ void MallaInd::calcular_normales()
    // .......
 
   std::cout << "Calcular normales:" << std::endl;
-  
 
 }
 
+void MallaInd::setColorVertices()
+{
+  for ( unsigned i = 0; i < tam_ver; i++)
+    col_ver.push_back({0.1, 0.1, (float)(i+1) / tam_ver});
+}
 
 // -----------------------------------------------------------------------------
 void MallaInd::visualizarDE_MI( ContextoVis & cv )
 {
    // COMPLETAR: en la práctica 1: visualizar en modo inmediato (glDrawElements)
    // ...........
+#if MODO_INMEDIATO
+
+
+    glBegin (GL_TRIANGLES);
+    for ( unsigned i = 0; i < caras.size(); i++)
+      for ( int j = 0; j < 3; j++)
+        {
+          unsigned ind_ver = caras[i][j];
+          if (!col_ver.empty())
+            glColor3fv(col_ver[ind_ver]);
+          glVertex3fv (vertices[ind_ver]);
+        }
+
+   glEnd();
+
+#else
 
   // Habilitar uso de un array de vértices.
   glEnableClientState( GL_VERTEX_ARRAY );
 
   // Especificar el puntero a tabla de coordenadas de vértices
   glVertexPointer( 3, GL_FLOAT, 0, vertices.data());
+
+  // Especificar y habilitar puntero a colores
+  glColorPointer(3, GL_FLOAT, 0, col_ver.data());
+  glEnableClientState (GL_COLOR_ARRAY);
 
   // Dibujar usando vértices indexados. Parámetros.
   // - Tipo de primitiva
@@ -65,18 +91,9 @@ void MallaInd::visualizarDE_MI( ContextoVis & cv )
 
   // Deshabilitar el array de vértices
   glDisableClientState( GL_VERTEX_ARRAY);
+  glDisableClientState( GL_COLOR_ARRAY);
 
-
-  // VERSION CON BEGIN-END.
-  //   glBegin (GL_TRIANGLES);
-  //   for ( int i = 0; i < tabla_caras.size(); i++)
-  //     for ( int j = 0; j < 3; j++)
-  //       {
-  //         unsigned ind_ver = tabla_caras[i][j];
-  //         glVertex3fv (tabla_vertices[ind_ver]);
-  //       }
-
-  //  glEnd();
+#endif
 
 
 }
@@ -110,6 +127,11 @@ void MallaInd::crearVBOs ()
   id_vbo_ver = VBO_Crear( GL_ARRAY_BUFFER, tam_ver, vertices.data());
   id_vbo_tri = VBO_Crear( GL_ELEMENT_ARRAY_BUFFER, tam_tri, caras.data()) ;
 
+  if (!col_ver.empty())
+    {
+      id_vbo_col_ver = VBO_Crear (GL_ARRAY_BUFFER, tam_ver, col_ver.data());
+    }
+
 }
 
 // ----------------------------------------------------------------------------
@@ -123,6 +145,16 @@ void MallaInd::visualizarDE_VBOs( ContextoVis & cv )
 
   crearVBOs();
 
+  if (!col_ver.empty())
+    {
+      std::cout << "Utilizando colores " << std::endl;
+      glBindBuffer (GL_ARRAY_BUFFER, id_vbo_col_ver);
+      glColorPointer ( 3, GL_FLOAT, 0, 0);
+      glEnableClientState (GL_COLOR_ARRAY );
+    }
+
+
+
   glBindBuffer ( GL_ARRAY_BUFFER, id_vbo_ver); // Activar VBO
   glVertexPointer ( 3, GL_FLOAT, 0, 0 ); // Seleccionamos el formato y el offset
   glBindBuffer ( GL_ARRAY_BUFFER, 0 ); // Desactivamos el VBO
@@ -135,6 +167,7 @@ void MallaInd::visualizarDE_VBOs( ContextoVis & cv )
 
   // Desactivamos el array de vértices.
   glDisableClientState (GL_VERTEX_ARRAY);
+  glDisableClientState(GL_COLOR_ARRAY);
 
 }
 
@@ -197,8 +230,10 @@ Cubo::Cubo( Tupla3f origen, float lado)
                  {4,5,6}, {4,6,7}
   };
 
- 
-// *****************************************************************************
+
+  tam_ver = vertices.size();
+  tam_tri = caras.size();
+  setColorVertices();
 }
 
 
@@ -219,8 +254,9 @@ Tetraedro::Tetraedro( )
   vertices = {cero, uno, dos, punta};
   caras = {{0,1,2},{0,1,3},{1,2,3},{0,2,3}};
 
-
-
+  tam_ver = vertices.size();
+  tam_tri = caras.size();
+  setColorVertices();
 }
 // *****************************************************************************
 

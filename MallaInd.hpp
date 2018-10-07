@@ -26,11 +26,12 @@ protected:
   std::vector <Tupla3f> col_ver;
   std::vector <Tupla3f> col_tri;
 
-  GLuint id_vbo_ver;
-  GLuint id_vbo_tri;
+  GLuint id_vbo_ver = 0;
+  GLuint id_vbo_tri = 0;
+  GLuint id_vbo_col_ver = 0;
 
-  unsigned tam_ver;
-  unsigned tam_tri;
+  unsigned tam_ver = 0;
+  unsigned tam_tri = 0;
 
   // calculo de las normales de esta malla
   void calcular_normales();
@@ -40,6 +41,10 @@ protected:
   // visualizar con 'draw elements', en modo diferido (con VBOS)
   void visualizarDE_VBOs( ContextoVis & cv );
 
+  // Establecer colores de los vertices
+  virtual void setColorVertices();
+
+  // Inicializar VBO
   void crearVBOs ( );
 
 public:

@@ -16,11 +16,12 @@
 using namespace std ;
 
 static unsigned objetoActivo2 = 0 ; // objeto activo: malla ply (0), malla revol (1)
-static constexpr int numObjetos2 = 5 ;
+static constexpr int numObjetos2 = 6 ;
 
 static Objeto3D * objetos2[numObjetos2] = { nullptr, nullptr, nullptr, nullptr, nullptr};
 static MallaPLY* malla_ply = nullptr;
 static MallaRevol* malla_revol = nullptr;
+static MallaRevol* malla_revol2 = nullptr;
 static Cilindro* cilindro = nullptr;
 static Cono* cono = nullptr;
 static Esfera* esfera = nullptr;
@@ -37,16 +38,18 @@ void P2_Inicializar(  )
    // ...
 
    malla_ply = new MallaPLY("../plys/ant.ply");
-   malla_revol = new MallaRevol("../plys/peon.ply", 100, true, true);
-   cilindro = new Cilindro(2, 100, true, true);
+   malla_revol = new MallaRevol("../plys/peon.ply", 10, true, true);
+   malla_revol2 = new MallaRevol("../plys/peon.ply", 10, true, false);
+   cilindro = new Cilindro(2, 10, true, true);
    cono = new Cono(5, 100, true, true);
    esfera = new Esfera(100, 10, true, true);
 
    objetos2[0] = malla_ply;
    objetos2[1] = malla_revol;
-   objetos2[2] = cilindro;
-   objetos2[3] = cono;
-   objetos2[4] = esfera;
+   objetos2[2] = malla_revol2;
+   objetos2[3] = cilindro;
+   objetos2[4] = cono;
+   objetos2[5] = esfera;
    cout << "Hecho." << endl << flush ;
 }
 
