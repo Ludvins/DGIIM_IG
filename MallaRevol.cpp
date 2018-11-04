@@ -114,8 +114,8 @@ void MallaRevol::crearMallaRevol( const std::vector<Tupla3f>& perfil_original,
        }
    }
 
-   tam_ver = vertices.size();
-   tam_tri = caras.size();
+   num_ver = vertices.size();
+   num_caras = caras.size();
 
    setColorVertices();
 
@@ -133,6 +133,26 @@ Cilindro::Cilindro ( const int num_verts_per, //Numero de vertices del perfil or
 
   for ( unsigned i = 0; i < num_verts_per; i++){
     perfil.push_back( {1.0, 0.0 + (i+1)/num_verts_per, 0.0});
+  }
+
+  crearMallaRevol(perfil, nperfiles, crear_tapas, cerrar_malla);
+
+}
+
+CustomCilindro::CustomCilindro ( const int num_verts_per, //Numero de vertices del perfil original
+                     const unsigned nperfiles, //Numero de perfiles
+                     const bool crear_tapas,
+                     const bool cerrar_malla,
+                     const float tapa_superior
+                     )
+{
+
+  cout << "Creando cilindro con " << num_verts_per << " " << nperfiles << endl;
+  vector<Tupla3f> perfil;
+
+  for ( unsigned i = 0; i < num_verts_per; i++){
+    float s = (num_verts_per - 1 - i)/(num_verts_per - 1);
+    perfil.push_back( {s + (1-s)*tapa_superior , 0.0 + (i+1)/num_verts_per, 0.0});
   }
 
   crearMallaRevol(perfil, nperfiles, crear_tapas, cerrar_malla);
@@ -174,12 +194,6 @@ Esfera::Esfera( const int num_verts_per,
   }
 
   crearMallaRevol(perfil, nperfiles, crear_tapas, cerrar_malla);
-
-
-
-
-
-
 
 }
 

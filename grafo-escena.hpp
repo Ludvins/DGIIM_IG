@@ -28,6 +28,9 @@
 #include "matrices-tr.hpp"
 #include "materiales.hpp"
 #include "Objeto3D.hpp"
+#include "MallaInd.hpp"
+#include "MallaRevol.hpp"
+#include "MallaPLY.hpp"
 
 // *********************************************************************
 // declaración adelantada de estructura para un nodo del grafo de escena
@@ -53,7 +56,7 @@ struct EntradaNGE
    } ;
    // constructores (uno por tipo)
    EntradaNGE( Objeto3D* pObjeto ) ;      // (copia solo puntero)
-   EntradaNGE( const Matriz4f& pMatriz ); // (crea copia en el heap)
+   EntradaNGE( const Matriz4f& pMatriz ) ;// (crea copia en el heap)
    EntradaNGE( Material* pMaterial ) ;    // (copia solo puntero)
    ~EntradaNGE() ;
 } ;
@@ -64,10 +67,10 @@ struct EntradaNGE
 class NodoGrafoEscena : public Objeto3D
 {
    protected:
-   // COMPLETAR: práctica 3: definir variables y métodos privados del nodo
+   // DONE: práctica 3: definir variables y métodos privados del nodo
    // .......
-
   std::vector <EntradaNGE> entradas; // vector de entradas.
+  Tupla3f color;
 
    public:
 
@@ -82,19 +85,19 @@ class NodoGrafoEscena : public Objeto3D
 
    // añadir una entrada al final, hace copia de la entrada
    // devuelve indice de la entrada dentro del vector de entradas
-   unsigned agregar( const EntradaNGE & entrada );
+   unsigned agregar( const EntradaNGE& entrada );
 
    // construir una entrada y añadirla (al final)
-   unsigned agregar( Objeto3D * pObjeto ); // objeto (copia solo puntero)
-   unsigned agregar( const Matriz4f & pMatriz ); // matriz (copia objeto)
-   unsigned agregar( Material * pMaterial ); // material (copia solo puntero)
+   unsigned agregar( Objeto3D* pObjeto ); // objeto (copia solo puntero)
+   unsigned agregar( const Matriz4f& pMatriz ); // matriz (copia objeto)
+   unsigned agregar( Material* pMaterial ); // material (copia solo puntero)
 
    // devuelve el puntero a la matriz en la i-ésima entrada
-   Matriz4f * leerPtrMatriz( unsigned iEnt );
+   Matriz4f* leerPtrMatriz( unsigned iEnt );
 
    // método para buscar un objeto con un identificador
-   virtual bool buscarObjeto( const int ident_busc, const Matriz4f & mmodelado,
-                    Objeto3D ** objeto, Tupla3f & centro_wc )  ;
+   virtual bool buscarObjeto( const int ident_busc, const Matriz4f& mmodelado,
+                    Objeto3D** objeto, Tupla3f& centro_wc )  ;
 
    // si 'centro_calculado' es 'false', recalcula el centro usando los centros
    // de los hijos (el punto medio de la caja englobante de los centros de hijos)
@@ -109,7 +112,7 @@ class NodoGrafoEscena : public Objeto3D
 class NodoGrafoEscenaParam : public NodoGrafoEscena
 {
    protected:
-      // COMPLETAR: práctica 3: declarar vector de parámetros del nodo 
+      // DONE: práctica 3: declarar vector de parámetros del nodo.
       // .......
 
   std::vector <Parametro> parametros; // vector de parámetros
@@ -125,6 +128,67 @@ class NodoGrafoEscenaParam : public NodoGrafoEscena
       // se usa cuando están activadas las animaciones, una vez antes de cada frame
       void siguienteCuadro();
 } ;
+
+
+class Muneco : public NodoGrafoEscenaParam {
+
+ public:
+  Muneco();
+};
+
+class Brazo : public  NodoGrafoEscena {
+  int indice_hombro;
+  int indice_codo;
+
+public:
+  Brazo();
+  Matriz4f* getArticulacionHombro(){ return leerPtrMatriz(indice_hombro); }
+  Matriz4f* getArticulacionCodo() { return leerPtrMatriz(indice_codo); }
+};
+
+class Cola : public NodoGrafoEscena {
+
+  int indice1, indice2, indice3, indice4, indice5, indice6, indice7, indice8;
+
+public:
+  Cola();
+
+  Matriz4f* getArticulacion1(){ return leerPtrMatriz(indice1); }
+  Matriz4f* getArticulacion2(){ return leerPtrMatriz(indice2); }
+  Matriz4f* getArticulacion3(){ return leerPtrMatriz(indice3); }
+  Matriz4f* getArticulacion4(){ return leerPtrMatriz(indice4); }
+  Matriz4f* getArticulacion5(){ return leerPtrMatriz(indice5); }
+  Matriz4f* getArticulacion6(){ return leerPtrMatriz(indice6); }
+  Matriz4f* getArticulacion7(){ return leerPtrMatriz(indice7); }
+  Matriz4f* getArticulacion8(){ return leerPtrMatriz(indice8); }
+
+};
+
+class Ojo : public NodoGrafoEscena {
+
+public:
+  Ojo();
+};
+
+class SegmentoCola : public NodoGrafoEscena {
+
+public:
+  SegmentoCola();
+};
+
+class ejercicio1 : public NodoGrafoEscenaParam {
+
+public:
+  ejercicio1();
+
+};
+
+class ejercicio2 : public NodoGrafoEscenaParam {
+
+public:
+  ejercicio2();
+
+};
 
 #endif // GRAFO_ESCENA_HPP
 

@@ -29,9 +29,7 @@ void P1_Inicializar(  )
    // COMPLETAR: práctica 1: asignar valores a 'objeto[0]' y 'objeto[1]'
    // (punteros a mallas)
 
-   Tupla3f origen_cubo = {0.0, 0.0, 0.0};
-   float lado = 1.0;
-   objeto[0] = new Cubo(origen_cubo, lado);
+   objeto[0] = new Cubo();
 
    cout << "Primer objeto creado." << endl << flush;
 

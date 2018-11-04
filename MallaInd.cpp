@@ -30,44 +30,57 @@ MallaInd::MallaInd()
 MallaInd::MallaInd( const std::string & nombreIni )
 {
    // 'identificador' puesto a 0 por defecto, 'centro_oc' puesto a (0,0,0)
-   ponerNombre(nombreIni) ; 
+   ponerNombre(nombreIni);
 }
 
 // -----------------------------------------------------------------------------
 // calcula las dos tablas de normales
 void MallaInd::calcular_normales()
 {
-   // COMPLETAR: en la práctica 2: calculo de las normales de la malla
+   // TODO: en la práctica 2: calculo de las normales de la malla
    // .......
 
   std::cout << "Calcular normales:" << std::endl;
 
 }
 
-void MallaInd::setColorVertices()
+void MallaInd::fijarColorNodo(const Tupla3f& color) {
+
+  col_ver.clear();
+  for (unsigned i = 0; i < num_ver; i++)
+    col_ver.push_back(color);
+}
+
+void MallaInd::setColorVertices(std::vector<Tupla3f>* colores)
 {
-  for ( unsigned i = 0; i < tam_ver; i++)
-    col_ver.push_back({0.1, 0.1, (float)(i+1) / tam_ver});
+  if (colores != nullptr) {
+    col_ver.clear();
+    for (unsigned i = 0; i < num_ver; i++)
+      col_ver.push_back(colores->at(i));
+  }
+
+  else if (col_ver.size() == 0) { // Gradiente
+    for (unsigned i = 0; i < num_ver; i++)
+      col_ver.push_back({0.1, 0.1, (float) (i+1) / num_ver});
+  }
 }
 
 // -----------------------------------------------------------------------------
 void MallaInd::visualizarDE_MI( ContextoVis & cv )
 {
-   // COMPLETAR: en la práctica 1: visualizar en modo inmediato (glDrawElements)
+   // DONE: en la práctica 1: visualizar en modo inmediato (glDrawElements)
    // ...........
+
 #if MODO_INMEDIATO
-
-
     glBegin (GL_TRIANGLES);
-    for ( unsigned i = 0; i < caras.size(); i++)
+    for (auto cara : caras) 
       for ( int j = 0; j < 3; j++)
         {
-          unsigned ind_ver = caras[i][j];
           if (!col_ver.empty())
-            glColor3fv(col_ver[ind_ver]);
-          glVertex3fv (vertices[ind_ver]);
-        }
+            glColor3fv(col_ver[cara[j]]);
 
+          glVertex3fv (vertices[cara[j]]);
+        }
    glEnd();
 
 #else
@@ -88,6 +101,9 @@ void MallaInd::visualizarDE_MI( ContextoVis & cv )
   // - Tipo de índices.
   // - Puntero a tabla de triángulos.
   glDrawElements(GL_TRIANGLES, caras.size()*3, GL_UNSIGNED_INT, caras.data());
+  /* NOTA: Si quisiéramos usar glDrawArrays (por ejemplo, para el modo puntos).
+  *  glDrawArrays(GL_TRIANGLES, 0, 3L * tabla_vertices.size());
+  */
 
   // Deshabilitar el array de vértices
   glDisableClientState( GL_VERTEX_ARRAY);
@@ -119,41 +135,38 @@ GLuint VBO_Crear (GLuint tipo, GLuint size, GLvoid* p)
 void MallaInd::crearVBOs ()
 {
 
-  tam_ver = sizeof(float)*3*vertices.size();
-  tam_tri = sizeof(unsigned)*3*caras.size();
+  num_ver = sizeof(float)*3*vertices.size();
+  num_caras = sizeof(unsigned)*3*caras.size();
 
   // GL_ARRAY_BUFFER - Vertex attributes
   // GL_ELEMENT_ARRAY_BUFFER - Vertex array indices.
-  id_vbo_ver = VBO_Crear( GL_ARRAY_BUFFER, tam_ver, vertices.data());
-  id_vbo_tri = VBO_Crear( GL_ELEMENT_ARRAY_BUFFER, tam_tri, caras.data()) ;
+  id_vbo_ver = VBO_Crear( GL_ARRAY_BUFFER, num_ver, vertices.data());
+  id_vbo_caras = VBO_Crear( GL_ELEMENT_ARRAY_BUFFER, num_caras, caras.data()) ;
 
   if (!col_ver.empty())
-    {
-      id_vbo_col_ver = VBO_Crear (GL_ARRAY_BUFFER, tam_ver, col_ver.data());
-    }
+      id_vbo_col_ver = VBO_Crear (GL_ARRAY_BUFFER, num_ver, col_ver.data());
 
+  vbo_creado = true;
 }
 
 // ----------------------------------------------------------------------------
 void MallaInd::visualizarDE_VBOs( ContextoVis & cv )
 {
-   // COMPLETAR: práctica 1: visualizar en modo diferido,
+   // DONE: práctica 1: visualizar en modo diferido,
    //                        usando VBOs (Vertex Buffer Objects)
    // ..........
 
   // Inicializa VBO (solo una vez).
 
-  crearVBOs();
+  if (!vbo_creado)
+    crearVBOs();
 
   if (!col_ver.empty())
     {
-      std::cout << "Utilizando colores " << std::endl;
       glBindBuffer (GL_ARRAY_BUFFER, id_vbo_col_ver);
       glColorPointer ( 3, GL_FLOAT, 0, 0);
       glEnableClientState (GL_COLOR_ARRAY );
     }
-
-
 
   glBindBuffer ( GL_ARRAY_BUFFER, id_vbo_ver); // Activar VBO
   glVertexPointer ( 3, GL_FLOAT, 0, 0 ); // Seleccionamos el formato y el offset
@@ -161,8 +174,8 @@ void MallaInd::visualizarDE_VBOs( ContextoVis & cv )
   glEnableClientState ( GL_VERTEX_ARRAY ); // Activamos uso de VA.
 
   // Visualizamos con glDrawElements
-  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, id_vbo_tri );
-  glDrawElements ( GL_TRIANGLES, caras.size()*3L, GL_UNSIGNED_INT, NULL );
+  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, id_vbo_caras );
+  glDrawElements ( GL_TRIANGLES, num_caras*3L, GL_UNSIGNED_INT, NULL );
   glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
   // Desactivamos el array de vértices.
@@ -175,7 +188,7 @@ void MallaInd::visualizarDE_VBOs( ContextoVis & cv )
 
 void MallaInd::visualizarGL( ContextoVis & cv )
 {
-   // COMPLETAR: práctica 1: visualizar en modo inmediato o en modo diferido (VBOs),
+   // DONE: práctica 1: visualizar en modo inmediato o en modo diferido (VBOs),
    // (tener en cuenta el modo de visualización en 'cv' (alambre, sólido, etc..))
    //
    // .............
@@ -203,16 +216,18 @@ void MallaInd::visualizarGL( ContextoVis & cv )
 
 // *****************************************************************************
 
-Cubo::Cubo( Tupla3f origen, float lado)
+Cubo::Cubo()
 :  MallaInd( "Malla Cubo" )
 {
+  
 
-  float origenx = origen[0],
-    origeny = origen[1],
-    origenz = origen[2];
+  float origenx = 0.0,
+    origeny = 0.0,
+    origenz = 0.0;
+  float lado = 1.0;
 
   // Rojo, Verde, Azul
-  Tupla3f cero = origen;
+  Tupla3f cero = {origenx, origeny ,origenz};
   Tupla3f uno = {origenx + lado, origeny, origenz};
   Tupla3f dos = {origenx + lado, origeny,origenz + lado};
   Tupla3f tres = {origenx, origeny, origenz + lado};
@@ -231,8 +246,8 @@ Cubo::Cubo( Tupla3f origen, float lado)
   };
 
 
-  tam_ver = vertices.size();
-  tam_tri = caras.size();
+  num_ver = vertices.size();
+  num_caras = caras.size();
   setColorVertices();
 }
 
@@ -241,21 +256,27 @@ Tetraedro::Tetraedro( )
 :  MallaInd( "Malla Tetraedro")
 {
 
-  float origen = 0.0;
+  Tupla3f origen = {0.0, 0.0, 0.0};
   float lado = 1.0;
   float altura = 1.0;
 
+  vertices = {
+                    origen + lado * Tupla3f{1.0, 0.0, -1.0/sqrt(2)},
+                    origen + lado * Tupla3f{0.0, 1.0, 1.0/sqrt(2)},
+                    origen + lado * Tupla3f{-1.0, 0.0, -1.0/sqrt(2)},
+                    origen + lado * Tupla3f{0.0, -1.0, 1.0/sqrt(2)}
+  };
+
+  caras = {
+                 {3, 0, 1},
+                 {2, 3, 1},
+                 {1, 0, 2},
+                 {2, 0, 3}
+  };
+
   // Numeración de la base en sentido horario.
-
-  Tupla3f cero = {origen, origen, origen};
-  Tupla3f uno = {lado, origen , origen};
-  Tupla3f dos = {origen, origen, lado};
-  Tupla3f punta = {origen, altura, origen};
-  vertices = {cero, uno, dos, punta};
-  caras = {{0,1,2},{0,1,3},{1,2,3},{0,2,3}};
-
-  tam_ver = vertices.size();
-  tam_tri = caras.size();
+  num_ver = vertices.size();
+  num_caras = caras.size();
   setColorVertices();
 }
 // *****************************************************************************

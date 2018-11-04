@@ -51,6 +51,8 @@ class Objeto3D
       // (re)calcular centro del objeto, si es necesario
       virtual void calcularCentroOC() ;
 
+      virtual void fijarColorNodo(const Tupla3f& color);
+
       // destructor
       virtual ~Objeto3D();
 

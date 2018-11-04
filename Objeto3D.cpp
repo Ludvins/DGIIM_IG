@@ -91,10 +91,15 @@ bool Objeto3D::buscarObjeto
       return false ;
 }
 
+
+void Objeto3D::fijarColorNodo(const Tupla3f& color)
+{
+}
+
 // -----------------------------------------------------------------------------
 // destructor
 Objeto3D::~Objeto3D()
 {
    using namespace std ;
-   cout << "destruyendo objeto3D de nombre: " << nombre_obj << endl << flush ;
+   cout << "Destruyendo objeto3D de nombre: " << nombre_obj << endl << flush ;
 }

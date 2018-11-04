@@ -10,6 +10,7 @@
 
 #include <vector>          // usar std::vector
 #include <string>
+#include <cmath>
 
 #include "MallaInd.hpp"   // declaración de 'Objeto3D'
 // ---------------------------------------------------------------------
@@ -22,6 +23,24 @@ class MallaPLY : public MallaInd
       // crea una malla de revolucion
       MallaPLY( const std::string & nombre_arch ) ;
 
+  Tupla3f size(){
+    float x = 0.0;
+    float y = 0.0;
+    float z = 0.0;
+
+    for( auto it : vertices){
+      std::cout << it << std::endl;
+      x = std::max((float)fabs(it[0]), x);
+      y = std::max((float)fabs(it[1]), y);
+      z = std::max((float)fabs(it[2]), z);
+
+    }
+
+
+    return {x , y , z};
+
+  }
+  
 } ;
 
 #endif

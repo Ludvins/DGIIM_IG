@@ -33,8 +33,8 @@ MallaPLY::MallaPLY( const std::string & nombre_arch )
    for (int i = 0; i < vector_caras.size(); i+=3)
      caras.push_back({vector_caras[i], vector_caras[i+1], vector_caras[i+2]});
 
-   tam_ver = vertices.size();
-   tam_tri = caras.size();
+   num_ver = vertices.size();
+   num_caras = caras.size();
 
    setColorVertices();
 

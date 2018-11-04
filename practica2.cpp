@@ -15,10 +15,10 @@
 
 using namespace std ;
 
-static unsigned objetoActivo2 = 0 ; // objeto activo: malla ply (0), malla revol (1)
+static unsigned objetoActivo2 = 0 ;
 static constexpr int numObjetos2 = 6 ;
 
-static Objeto3D * objetos2[numObjetos2] = { nullptr, nullptr, nullptr, nullptr, nullptr};
+static Objeto3D* objetos2[numObjetos2] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 static MallaPLY* malla_ply = nullptr;
 static MallaRevol* malla_revol = nullptr;
 static MallaRevol* malla_revol2 = nullptr;

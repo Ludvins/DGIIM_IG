@@ -54,6 +54,19 @@ public:
 } ;
 
 
+class CustomCilindro : public MallaRevol
+{
+
+ public:
+  CustomCilindro  ( const int num_verts_per, //Numero de vertices del perfil original
+                                 const unsigned nperfiles, //Numero de perfiles
+                                 const bool crear_tapas,
+                                 const bool cerrar_malla,
+                                 const float tapa_superior
+              );
+};
+
+
 class Cono : public MallaRevol
 {
 

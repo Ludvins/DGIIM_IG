@@ -1,0 +1,49 @@
+
+== Sistema operativo utilizado para compilar ==
+
+Arch Linux 64-bit con núcleo 4.18.12-arch1-1-ARCH
+
+== Implementación de OpenGL y librerías auxiliares ==
+
+- mesa 18.2.3-1
+- glew 2.1.0-1
+- glfw-x11 3.2.1-1
+- libjpeg-turbo 2.0.0-1
+
+== Teclas ==
+
+Teclas que se pueden utilizar:
+q/Q - Permite salir del programa.
+p/P - Permite ir a la siguiente práctica, despueés de la última se va a la primera.
++ - Permite acercar la cámara
+- - Permite alejar la cámara
+v/V - Permite cambiar entre modo inmediato y modo diferido.
+m/M - Permite cambiar el modo de visualizacion en un ciclo.
+o/O - Permite cambiar entre objetos dentro de la misma práctica.
+g/G - Permite seleccionar los diferentes parámetros (práctica 3).
+a/A - Permite activar o desactivar las animaciones
+> - Permite incrementar un parametro o su velicidad dependiendo de si las animaciones se encuentran activadas.
+< - permite decrementar un parámetro o su velocidad dependiendo de si las animaciones se encientran activadas.
+r/R - Permite resetear todos los parámetros.
+
+ == Comentarios P1 ==
+
+He realizado la programación del cauce gráfico en los archivos simple_vs.glsl y simple_fs.glsl.
+He añadido la posibilidad de colorear un objeto en la clase MallaInd, mediante los métodos fijarColorNodo y setColorVertices.
+Se puede cambiar la forma de envio del modo inmediato con la macro MODO_INMEDIATO.
+
+== Comentarios P2 ==
+
+No he utilizado ningún archivo PLY que no se encontrará ya entre los archivos dados.
+
+Se ha realizado una figura básica adicional, CustomCilindro, que representa un cilindro donde las bases no son del mismo tamaño, una de ellas es de tamaño 1 y la otra se le pasa como parámetro (esto se ha utilizado para realizar la cola del muñeco de la practica 3).
+
+== Comentarios P3 ==
+
+Para la realización de la práctica se ha realizado la clase Muneco, Brazo, Cola, SegmentoCola y Ojo.
+Además hay dos clases más ejercicio1 y ejercicio2, realizadas para prácticar preguntas realizadas en exámenes de otros años.
+
+== Cambios en el código ==
+
+- Se añade un método virtual a Objeto3D llamado 'fijarColorNodo', para proporcionar compatibilidad
+en la implementación (recursiva) del método homónimo en NodoGrafoEscena.
