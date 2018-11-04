@@ -39,7 +39,7 @@ void ShaderProg::activar()
    assert( compilado );
    using namespace std ;
    glUseProgram( idProg );
-   cout << "activado frag/vert shader" << endl ;
+   //cout << "activado frag/vert shader" << endl ;
 }
 // -----------------------------------------------------------------------------
 

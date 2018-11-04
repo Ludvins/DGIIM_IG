@@ -163,7 +163,6 @@ void FijarMVPOpenGL()
 
 void DibujarEscena()
 {
-  //shader_prog.activar();
 
   if ( practicaActual == 5 )
       P5_FijarMVPOpenGL( ventana_tam_x, ventana_tam_y );
@@ -191,6 +190,9 @@ void VisualizarFrame()
 
    // hacer que la ventana GLFW sea la ventana actual
    glfwMakeContextCurrent( glfw_window );
+
+   if (contextoVis.usarShader)
+     shader_prog->activar();
 
    DibujarEscena();  // ordenes OpenGL para dibujar la escena correspondiente a la práctica actual
 
@@ -660,7 +662,6 @@ void Inicializa_OpenGL( )
 
    shader_prog = new SimpleSP(); // Identificador de programa.
 
-   shader_prog->activar();
 
    // ya está
    CError();

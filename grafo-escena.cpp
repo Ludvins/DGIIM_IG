@@ -370,7 +370,7 @@ Muneco::Muneco()
                                [=] (float v) {return MAT_Rotacion(v, 0, 1 ,0);},
                                true,
                                0.0,
-                               65.0,
+                               40.0,
                                0.1
                                );
   Parametro rotacion_codo_1 (

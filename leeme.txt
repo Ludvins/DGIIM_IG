@@ -43,6 +43,8 @@ Se ha realizado una figura básica adicional, CustomCilindro, que representa un 
 Para la realización de la práctica se ha realizado la clase Muneco, Brazo, Cola, SegmentoCola y Ojo.
 Además hay dos clases más ejercicio1 y ejercicio2, realizadas para prácticar preguntas realizadas en exámenes de otros años.
 
+He añadido un método a la clase MallaPLY que devuelve el tamaño de la malla, es decir, el máximo en cada eje que alcanza la figura.
+
 == Cambios en el código ==
 
 - Se añade un método virtual a Objeto3D llamado 'fijarColorNodo', para proporcionar compatibilidad

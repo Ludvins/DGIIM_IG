@@ -76,16 +76,16 @@ void MallaRevol::crearMallaRevol( const std::vector<Tupla3f>& perfil_original,
    for ( int i = 0; i < nperfiles - 1; i++)
      for ( unsigned j = 0; j < nvp-1; j++)
        {
-         caras.push_back({ i*nvp + j, (i+1)*nvp+j+1 , (i+1)*nvp+j});
-         caras.push_back({ i*nvp + j, i*nvp + j+1, (i+1)*nvp + j+1});
+         caras.push_back({ (i+1)*nvp+j+1 ,  i*nvp + j,(i+1)*nvp+j});
+         caras.push_back({i*nvp + j+1,  i*nvp + j, (i+1)*nvp + j+1});
        }
 
    // Si se ha querido cerrar la malla, es necesario crear las ultimas caras.
    if (cerrar_malla){
      for (unsigned j = 0; j < nvp-1; j++)
        {
-         caras.push_back({ (nper - 1)*nvp + j, j+1, j});
-         caras.push_back ({ (nper - 1)*nvp + j, (nper - 1)*nvp + j+1, j+1});
+         caras.push_back({  j+1, (nper - 1)*nvp + j,j});
+         caras.push_back ({  (nper - 1)*nvp + j+1, (nper - 1)*nvp + j,j+1});
        }
    }
    // Crear tapas
@@ -103,14 +103,14 @@ void MallaRevol::crearMallaRevol( const std::vector<Tupla3f>& perfil_original,
      for (int i = 0 ; i < nperfiles - 1; i++ )
        {
          caras.push_back( {i*nvp, vertices.size()-2, (i+1)*nvp} );
-         caras.push_back( {(i+1)*nvp - 1, vertices.size()-1, (i+2)*nvp -1} );
+         caras.push_back( { vertices.size()-1, (i+1)*nvp - 1,(i+2)*nvp -1} );
        }
 
      // Si se ha cerrado la malla hay caras adicionales.
      if (cerrar_malla)
        {
        caras.push_back ( { nvp*(nper - 1), vertices.size()-2 , 0 } );
-       caras.push_back ( { nvp*(nper - 1) + nvp - 1, vertices.size()-1, nvp - 1});
+       caras.push_back ( {vertices.size()-1,  nvp*(nper - 1) + nvp - 1, nvp - 1});
        }
    }
 
