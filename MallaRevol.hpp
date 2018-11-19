@@ -26,16 +26,20 @@ class MallaRevol : public MallaInd
    protected:
 
   void crearMallaRevol( const std::vector<Tupla3f>& perfil_original,
-              const unsigned nperfiles,
-              const bool     crear_tapas,
-              const bool     cerrar_malla ) ;
+                        const unsigned nperfiles,
+                        const bool     crear_tapas,
+                        const bool     cerrar_malla,
+                        const bool     crear_texturas
+                        );
 
    public:
       // crea una malla de revolucion
       MallaRevol( const std::string & nombre_arch,
                   const unsigned nperfiles,
                   const bool     crear_tapas,
-                  const bool     cerrar_malla ) ;
+                  const bool     cerrar_malla,
+                  const bool     crear_texturas
+                  );
 
   MallaRevol() = default;
 
@@ -49,7 +53,8 @@ public:
   Cilindro ( const int num_verts_per, //Numero de vertices del perfil original
              const unsigned nperfiles, //Numero de perfiles
              const bool crear_tapas,
-             const bool cerrar_malla
+             const bool cerrar_malla,
+             const bool crear_texturas
              );
 } ;
 
@@ -59,11 +64,12 @@ class CustomCilindro : public MallaRevol
 
  public:
   CustomCilindro  ( const int num_verts_per, //Numero de vertices del perfil original
-                                 const unsigned nperfiles, //Numero de perfiles
-                                 const bool crear_tapas,
-                                 const bool cerrar_malla,
-                                 const float tapa_superior
-              );
+                    const unsigned nperfiles, //Numero de perfiles
+                    const bool crear_tapas,
+                    const bool cerrar_malla,
+                    const float tapa_superior,
+                    const bool crear_texturas
+                    );
 };
 
 
@@ -74,7 +80,8 @@ public:
   Cono ( const int num_verts_per, //Numero de vertices del perfil original
          const unsigned nperfiles, //Numero de perfiles
          const bool crear_tapas,
-         const bool cerrar_malla
+         const bool cerrar_malla,
+         const bool crear_texturas
          );
 } ;
 
@@ -86,7 +93,8 @@ public:
   Esfera ( const int num_verts_per, //Numero de vertices del perfil original
            const unsigned nperfiles, //Numero de perfiles
            const bool crear_tapas,
-           const bool cerrar_malla
+           const bool cerrar_malla,
+           const bool crear_texturas
            );
 } ;
 

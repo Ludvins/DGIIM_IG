@@ -42,6 +42,31 @@ void MallaInd::calcular_normales()
 
   std::cout << "Calcular normales:" << std::endl;
 
+  assert(!vertices.empty());
+
+  for(int i = 0; i < vertices.size(); i++){
+    nor_vertices.push_back({0,0,0});
+  }
+
+  for( auto cara : caras ){
+
+    Tupla3f vertice_1 = vertices[cara[0]],
+      vertice_2 = vertices[cara[1]],
+      vertice_3 = vertices[cara[2]];
+
+    Tupla3f base_1 = vertice_2 - vertice_1;
+    Tupla3f base_2 = vertice_3 - vertice_1;
+
+    Tupla3f normal = base_1.cross(base_2).normalized();
+
+    nor_caras.push_back(normal);
+
+    for( int j = 0 ; j < 3; j++){
+      nor_vertices[cara[j]] = (nor_vertices[cara[j]] + normal).normalized();
+    }
+
+  }
+
 }
 
 void MallaInd::fijarColorNodo(const Tupla3f& color) {
@@ -63,6 +88,49 @@ void MallaInd::setColorVertices(std::vector<Tupla3f>* colores)
     for (unsigned i = 0; i < num_ver; i++)
       col_ver.push_back({0.1, 0.1, (float) (i+1) / num_ver});
   }
+}
+
+// -----------------------------------------------------------------------------
+
+void MallaInd::visualizarDE_NT ( ContextoVis& cv ){
+
+  glVertexPointer (3, GL_FLOAT, 0, vertices.data());
+  glTexCoordPointer (2, GL_FLOAT, 0, texturas.data());
+  glNormalPointer (GL_FLOAT, 0, nor_vertices.data());
+
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_NORMAL_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+  glDrawElements(GL_TRIANGLES, num_caras, GL_UNSIGNED_INT, caras.data());
+
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_NORMAL_ARRAY);
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+}
+
+// ----------------------------------------------------------------------------
+
+void MallaInd::visualizarVBOs_NT( ContextoVis& cv)
+{
+  // activar VBO de coordenadas de normales
+  glBindBuffer (GL_ARRAY_BUFFER, id_vbo_nor_ver);
+  glNormalPointer( GL_FLOAT, 0, 0);
+  glEnableClientState (GL_NORMAL_ARRAY );
+
+  // activar VBO de coordenadas de texturas.
+  glBindBuffer( GL_ARRAY_BUFFER, id_vbo_tex );
+  glTexCoordPointer( 2, GL_FLOAT, 0, 0 );
+  glEnableClientState (GL_TEXTURE_COORD_ARRAY );
+
+  // visualizar (el mismo método ya visto)
+  visualizarDE_VBOs(cv);
+
+  // Desactivar punteros a tablas
+  glDisableClientState (GL_NORMAL_ARRAY );
+  glDisableClientState ( GL_TEXTURE_COORD_ARRAY);
+
 }
 
 // -----------------------------------------------------------------------------
@@ -145,6 +213,12 @@ void MallaInd::crearVBOs ()
 
   if (!col_ver.empty())
       id_vbo_col_ver = VBO_Crear (GL_ARRAY_BUFFER, num_ver, col_ver.data());
+
+  if (!nor_vertices.empty())
+    id_vbo_nor_ver = VBO_Crear (GL_ARRAY_BUFFER, num_ver, nor_vertices.data());
+
+  if (!texturas.empty())
+    id_vbo_tex = VBO_Crear (GL_ARRAY_BUFFER, sizeof(float)*2L*num_ver, vertices.data());
 
   vbo_creado = true;
 }

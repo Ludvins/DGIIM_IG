@@ -60,7 +60,8 @@ class PilaMateriales
 // posibles modos de generacion de coords. de textura
 
 typedef enum
-{  mgct_desactivada,
+{
+   mgct_desactivada,
    mgct_coords_objeto,
    mgct_coords_ojo
 }
@@ -109,14 +110,10 @@ class Textura
 
    void enviar() ;    // envia la imagen a la GPU (gluBuild2DMipmaps)
 
-   bool
-      enviada ; // true si ha sido enviada, false en otro caso
-   GLuint
-      ident_textura ;// 'nombre' o identif. de textura para OpenGL
-   jpg::Imagen *
-      imagen ;       // objeto con los bytes de la imagen de textura
-   ModoGenCT
-      modo_gen_ct ;  // modo de generacion de coordenadas de textura
+   bool enviada ; // true si ha sido enviada, false en otro caso
+   GLuint ident_textura ; // 'nombre' o identif. de textura para OpenGL
+   jpg::Imagen* imagen ;       // objeto con los bytes de la imagen de textura
+   ModoGenCT modo_gen_ct ;  // modo de generacion de coordenadas de textura
                      // (desactivadas si modo_gen_ct == mgct_desactivada)
    float
       coefs_s[4] ,   // si 'modo_gen_ct != desactivadas', coeficientes para la coord. S
@@ -194,7 +191,7 @@ class Material
 //**********************************************************************
 // Clase FuenteLuz
 // ---------------
-// clase que contiene los atributo de una fuente de luz OpenGL
+// clase que contiene los atributos de una fuente de luz OpenGL
 
 class FuenteLuz
 {

@@ -70,14 +70,18 @@ void PilaMateriales::pop(  )
    Material * anterior = pila[pila.size()-1] ;
    pila.pop_back();
    activarMaterial( anterior );  // cambia 'actual'
-}
+ }
 
 //**********************************************************************
 
 Textura::Textura( const std::string & nombreArchivoJPG )
 {
-   // COMPLETAR: práctica 4: inicializar todas las variables
+   // TODO: práctica 4: inicializar todas las variables
    // .....
+
+  enviada = false;
+  glGenTextures(1, &ident_textura);
+  imagen = new jpg::Imagen(nombreArchivoJPG);
 
 }
 
@@ -89,6 +93,8 @@ void Textura::enviar()
 {
    // COMPLETAR: práctica 4: enviar la imagen de textura a la GPU
    // .......
+
+  gluBuild2DMipmaps( GL_TEXTURE_2D, GL_RGB, (GLsizei)imagen->tamX(), (GLsizei)imagen->tamY(), GL_RGB, GL_UNSIGNED_INT, nullptr);
 
 }
 
@@ -112,6 +118,9 @@ void Textura::activar(  )
 {
    // COMPLETAR: práctica 4: enviar la textura a la GPU (solo la primera vez) y activarla
    // .......
+
+  enviar();
+  glBindTexture (GL_TEXTURE_2D, ident_textura);
 
 }
 // *********************************************************************
@@ -152,8 +161,10 @@ Material::Material( Textura * text, float ka, float kd, float ks, float exp )
 {
    // COMPLETAR: práctica 4: inicializar material usando text,ka,kd,ks,exp
    // .....
-
+  
    ponerNombre("material con textura e iluminación") ;
+   tex = text;
+   iluminacion = true;
 
  }
 
@@ -171,8 +182,13 @@ Material::Material( const Tupla3f & colorAmbDif, float ka, float kd, float ks, f
 
 Material::Material( const float r, const float g, const float b )
 {
-   // COMPLETAR: práctica 4: inicializar material usando un color plano sin iluminación
+   // TODO: práctica 4: inicializar material usando un color plano sin iluminación
    // .....
+
+  ponerNombre("Material color plano.");
+  color = {r, g, b, 1.0};
+  iluminacion = false;
+  tex = nullptr;
 
 }
 
@@ -234,7 +250,7 @@ FuenteLuz::FuenteLuz( GLfloat p_longi_ini, GLfloat p_lati_ini, const VectorRGB &
    //CError();
 
    if ( trazam )
-      cout << "creando fuente de luz." <<  endl << flush ;
+      cout << "Creando fuente de luz." <<  endl << flush ;
 
    // inicializar parámetros de la fuente de luz
    longi_ini = p_longi_ini ;
@@ -257,6 +273,25 @@ void FuenteLuz::activar()
 {
    // COMPLETAR: práctica 4: activar una fuente de luz (en GL_LIGHT0 + ind_fuente)
    // .....
+
+  glEnable (GL_LIGHT0 + ind_fuente);
+
+
+  glLightfv (GL_LIGHT0 + ind_fuente, GL_AMBIENT, (GLfloat*) col_ambiente);
+  glLightfv (GL_LIGHT0 + ind_fuente, GL_DIFFUSE, (GLfloat*) &col_difuso);
+  glLightfv (GL_LIGHT0 + ind_fuente, GL_SPECULAR, (GLfloat*) &col_especular);
+
+  const float ejeZ[4] = {0.0, 0.0, 1.0, 0.0 };
+  glMatrixMode (GL_MODELVIEW );
+  glPushMatrix() ;
+
+  glLoadIdentity();
+  glRotatef (lati, 0.0, 1.0, 0.0);
+  glRotatef (longi, -1.0, 0.0, 0.0 );
+
+  glLightfv (GL_LIGHT0 + ind_fuente, GL_POSITION, ejeZ);
+
+  glPopMatrix();
 
 }
 
@@ -318,7 +353,19 @@ void ColFuentesLuz::activar( unsigned id_prog )
    // COMPLETAR: práctica 4: activar una colección de fuentes de luz
    // .....
 
+  glEnable ( GL_LIGHTING );
+
+  if (vpf.size() < 8)
+
+    for (int i = 0; i < 8; i++)
+      glDisable( GL_LIGHT0 + i);
+
+  else
+
+    for ( auto fuente: vpf)
+      fuente->activar();
 }
+
 //----------------------------------------------------------------------
 FuenteLuz * ColFuentesLuz::ptrFuente( unsigned i )
 {
@@ -326,6 +373,7 @@ FuenteLuz * ColFuentesLuz::ptrFuente( unsigned i )
    return vpf[i] ;
 }
 //----------------------------------------------------------------------
+
 ColFuentesLuz::~ColFuentesLuz()
 {
    for( unsigned i = 0 ; i < vpf.size() ; i++ )

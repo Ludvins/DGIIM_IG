@@ -21,14 +21,18 @@ protected:
 
   std::vector <Tupla3f> vertices;
   std::vector <Tupla3i> caras;
-  std::vector <Tupla3f> nor_ver;
-  std::vector <Tupla3f> nor_tri;
+  std::vector <Tupla3f> nor_vertices;
+  std::vector <Tupla3f> nor_caras;
   std::vector <Tupla3f> col_ver;
   std::vector <Tupla3f> col_caras;
+  std::vector <Tupla2f> texturas;
+  //std::vector <GLfloat> textura_vertice;
 
   GLuint id_vbo_ver = 0;
   GLuint id_vbo_caras = 0;
   GLuint id_vbo_col_ver = 0;
+  GLuint id_vbo_tex = 0;
+  GLuint id_vbo_nor_ver = 0;
 
   unsigned num_ver = 0;
   unsigned num_caras = 0;
@@ -42,6 +46,9 @@ protected:
   void visualizarDE_MI( ContextoVis & cv );
   // visualizar con 'draw elements', en modo diferido (con VBOS)
   void visualizarDE_VBOs( ContextoVis & cv );
+
+  void visualizarDE_NT (ContextoVis& cv);
+  void visualizarVBOs_NT (ContextoVis& cv);
 
   // Inicializar VBO
   void crearVBOs ( );

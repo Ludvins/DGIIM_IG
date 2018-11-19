@@ -261,8 +261,8 @@ void NodoGrafoEscenaParam::siguienteCuadro()
 
 Muneco::Muneco()
 {
-  Cilindro* c = new Cilindro(2, 20, true, true);
-  Esfera* esfera = new Esfera(20, 20, false, true);
+  Cilindro* c = new Cilindro(2, 20, true, true, false);
+  Esfera* esfera = new Esfera(20, 20, false, true, false);
 
   int i_rotacion_principal = agregar(MAT_Ident());
 
@@ -589,9 +589,9 @@ Muneco::Muneco()
 
 SegmentoCola::SegmentoCola(){
   float escalado = 0.8;
-  Esfera* esfera = new Esfera(20, 20, false, true);
+  Esfera* esfera = new Esfera(20, 20, false, true, false);
 
-  CustomCilindro* c = new CustomCilindro(2, 20, true, true, escalado);
+  CustomCilindro* c = new CustomCilindro(2, 20, true, true, escalado, false);
 
   agregar(esfera);
   agregar(c);
@@ -604,9 +604,9 @@ Cola::Cola(){
   agregar(MAT_Traslacion(0.0 , 1.0, 0.5));
   agregar(MAT_Rotacion(90, 1, 0 ,0));
   float escalado = 0.8;
-  Esfera* esfera = new Esfera(20, 20, false, true);
+  Esfera* esfera = new Esfera(20, 20, false, true, false);
   SegmentoCola* sg = new SegmentoCola();
-  CustomCilindro* c = new CustomCilindro(2, 20, true, true, escalado);
+  CustomCilindro* c = new CustomCilindro(2, 20, true, true, escalado, false);
   agregar(c);
   agregar(MAT_Traslacion(0.0, 1.0, 0.0));
 
@@ -654,8 +654,8 @@ Cola::Cola(){
 Brazo::Brazo()
 {
 
-  Cilindro* c = new Cilindro(2, 20, true, true);
-  Esfera* esfera = new Esfera(20, 20, false, true);
+  Cilindro* c = new Cilindro(2, 20, true, true, false);
+  Esfera* esfera = new Esfera(20, 20, false, true, false);
 
   agregar(MAT_Traslacion(-1.0, -0.5, 0.0)); //Colocacion del hombro
 
@@ -683,8 +683,8 @@ Brazo::Brazo()
 }
 
 Ojo::Ojo(){
-  Esfera* e1 = new Esfera(20, 20, true, true);    // Esfera de fuera
-  Esfera* e2 = new Esfera(20, 20, true, true);    // Pupila
+  Esfera* e1 = new Esfera(20, 20, true, true, false);    // Esfera de fuera
+  Esfera* e2 = new Esfera(20, 20, true, true, false);    // Pupila
   e1->fijarColorNodo({1,1,1});
   e2->fijarColorNodo({0,0,0});
 

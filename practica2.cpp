@@ -38,11 +38,11 @@ void P2_Inicializar(  )
    // ...
 
    malla_ply = new MallaPLY("../plys/ant.ply");
-   malla_revol = new MallaRevol("../plys/peon.ply", 10, true, true);
-   malla_revol2 = new MallaRevol("../plys/peon.ply", 10, true, false);
-   cilindro = new Cilindro(2, 10, true, true);
-   cono = new Cono(5, 100, true, true);
-   esfera = new Esfera(100, 10, true, true);
+   malla_revol = new MallaRevol("../plys/peon.ply", 10, true, true, false);
+   malla_revol2 = new MallaRevol("../plys/peon.ply", 10, true, false, false);
+   cilindro = new Cilindro(2, 10, true, true, false);
+   cono = new Cono(5, 100, true, true, false);
+   esfera = new Esfera(100, 10, true, true, false);
 
    objetos2[0] = malla_ply;
    objetos2[1] = malla_revol;

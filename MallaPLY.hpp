@@ -29,7 +29,6 @@ class MallaPLY : public MallaInd
     float z = 0.0;
 
     for( auto it : vertices){
-      std::cout << it << std::endl;
       x = std::max((float)fabs(it[0]), x);
       y = std::max((float)fabs(it[1]), y);
       z = std::max((float)fabs(it[2]), z);
