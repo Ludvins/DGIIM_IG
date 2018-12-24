@@ -67,7 +67,7 @@ void PilaMateriales::pop(  )
       exit(1);
    }
 
-   Material * anterior = pila[pila.size()-1] ;
+   Material * anterior = pila [pila.size()-1] ;
    pila.pop_back();
    activarMaterial( anterior );  // cambia 'actual'
  }
@@ -76,12 +76,13 @@ void PilaMateriales::pop(  )
 
 Textura::Textura( const std::string & nombreArchivoJPG )
 {
-   // TODO: práctica 4: inicializar todas las variables
+   // DONE: práctica 4: inicializar todas las variables
    // .....
 
   enviada = false;
   glGenTextures(1, &ident_textura);
   imagen = new jpg::Imagen(nombreArchivoJPG);
+  modo_gen_ct = mgct_desactivada;
 
 }
 
@@ -91,10 +92,32 @@ Textura::Textura( const std::string & nombreArchivoJPG )
 
 void Textura::enviar()
 {
-   // COMPLETAR: práctica 4: enviar la imagen de textura a la GPU
+   // DONE: práctica 4: enviar la imagen de textura a la GPU
    // .......
 
-  gluBuild2DMipmaps( GL_TEXTURE_2D, GL_RGB, (GLsizei)imagen->tamX(), (GLsizei)imagen->tamY(), GL_RGB, GL_UNSIGNED_INT, nullptr);
+  if (modo_gen_ct == mgct_coords_objeto)
+    {
+      glTexGenfv ( GL_S, GL_OBJECT_PLANE, coefs_s );
+      glTexGenfv ( GL_T, GL_OBJECT_PLANE, coefs_t );
+    }
+
+  if (modo_gen_ct == mgct_coords_ojo)
+    {
+      glTexGenfv ( GL_S, GL_EYE_PLANE, coefs_s );
+      glTexGenfv ( GL_T, GL_EYE_PLANE, coefs_t );
+    }
+
+  gluBuild2DMipmaps(
+                    GL_TEXTURE_2D,
+                    GL_RGB,
+                    (GLsizei)imagen->tamX(),
+                    (GLsizei)imagen->tamY(),
+                    GL_RGB,
+                    GL_UNSIGNED_INT,
+                    imagen->leerPixels()
+                    );
+
+  enviada = true;
 
 }
 
@@ -113,14 +136,35 @@ Textura::~Textura( )
 
 //----------------------------------------------------------------------
 // por ahora, se asume la unidad de texturas #0
-
 void Textura::activar(  )
 {
-   // COMPLETAR: práctica 4: enviar la textura a la GPU (solo la primera vez) y activarla
+   // DONE: práctica 4: enviar la textura a la GPU (solo la primera vez) y activarla
    // .......
 
-  enviar();
-  glBindTexture (GL_TEXTURE_2D, ident_textura);
+  const GLint TEXTURE_MODE[] = { GL_OBJECT_LINEAR, GL_EYE_LINEAR };
+  const GLenum TEXTURE_RELATIVE[] = { GL_OBJECT_PLANE, GL_EYE_PLANE };
+
+  glEnable( GL_TEXTURE_2D );
+  glBindTexture( GL_TEXTURE_2D, ident_textura );
+
+
+  if (modo_gen_ct != mgct_desactivada)
+    {
+      glEnable( GL_TEXTURE_GEN_S );
+      glEnable( GL_TEXTURE_GEN_T );
+
+      glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, TEXTURE_MODE[modo_gen_ct-1]);
+      glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, TEXTURE_MODE[modo_gen_ct-1]);
+      glTexGenfv(GL_S, TEXTURE_RELATIVE[modo_gen_ct-1], coefs_s);
+      glTexGenfv(GL_T, TEXTURE_RELATIVE[modo_gen_ct-1], coefs_t);
+    }
+
+  else
+    {
+      glDisable( GL_TEXTURE_GEN_S );
+      glDisable( GL_TEXTURE_GEN_T );
+    }
+
 
 }
 // *********************************************************************
@@ -145,8 +189,8 @@ Material::Material( const std::string & nombreArchivoJPG )
    del.difusa    = VectorRGB( 0.5, 0.5, 0.5, 1.0 );
    del.especular = VectorRGB( 1.0, 1.0, 1.0, 1.0 );
 
-   del.emision   = VectorRGB(0.0,0.0,0.0,1.0);
-   del.ambiente  = VectorRGB( 0.0, 0.0, 0.0, 1.0);
+   tra.emision   = VectorRGB(0.0,0.0,0.0,1.0);
+   tra.ambiente  = VectorRGB( 0.0, 0.0, 0.0, 1.0);
    tra.difusa    = VectorRGB( 0.2, 0.2, 0.2, 1.0 );
    tra.especular = VectorRGB( 0.2, 0.2, 0.2, 1.0 );
 
@@ -159,12 +203,23 @@ Material::Material( const std::string & nombreArchivoJPG )
 Material::Material( Textura * text, float ka, float kd, float ks, float exp )
 :  Material()
 {
-   // COMPLETAR: práctica 4: inicializar material usando text,ka,kd,ks,exp
+   // DONE: práctica 4: inicializar material usando text,ka,kd,ks,exp
    // .....
-  
-   ponerNombre("material con textura e iluminación") ;
-   tex = text;
-   iluminacion = true;
+
+  iluminacion = true;
+  ponerNombre("Material con textura e iluminación") ;
+  tex = text;
+
+  del.ambiente    =
+    tra.ambiente  = VectorRGB ( ka, ka, ka, 1.0);
+
+  del.especular   =
+    tra.especular = VectorRGB ( ks, ks, ks, 1.0);
+
+  del.difusa    =
+    tra.difusa  = VectorRGB( kd, kd, kd, 1.0 );
+
+  del.exp_brillo = tra.exp_brillo = exp;
 
  }
 
@@ -173,19 +228,37 @@ Material::Material( Textura * text, float ka, float kd, float ks, float exp )
 // en el lugar de textura (textura == NULL)
 Material::Material( const Tupla3f & colorAmbDif, float ka, float kd, float ks, float exp )
 {
-   // COMPLETAR: práctica 4: inicializar material usando colorAmbDif,ka,kd,ks,exp
+   // DONE: práctica 4: inicializar material usando colorAmbDif,ka,kd,ks,exp
    // .....
 
-   ponerNombre("material color plano, ilum.") ;
+  iluminacion = true;
+  tex = nullptr;
+  ponerNombre("Material color plano e iluminación.") ;
+
+
+  coloresCero();
+
+  //color = colorAmbDif;
+
+  del.ambiente  =
+  del.difusa    =
+  tra.ambiente  =
+  tra.difusa    = {colorAmbDif[0], colorAmbDif[1], colorAmbDif[2], 1.0 };
+  del.especular =
+    tra.especular = {ks, ks, ks, 1.0};
+
+  del.exp_brillo = tra.exp_brillo = exp;
+
 }
 // ---------------------------------------------------------------------
 
 Material::Material( const float r, const float g, const float b )
 {
-   // TODO: práctica 4: inicializar material usando un color plano sin iluminación
+   // DONE: práctica 4: inicializar material usando un color plano sin iluminación
    // .....
 
   ponerNombre("Material color plano.");
+  coloresCero();
   color = {r, g, b, 1.0};
   iluminacion = false;
   tex = nullptr;
@@ -238,8 +311,53 @@ std::string Material::nombre() const
 
 void Material::activar(  )
 {
-   // COMPLETAR: práctica 4: activar un material
+   // TODO: práctica 4: activar un material
    // .....
+
+  if (iluminacion)
+    {
+      glDisable(GL_COLOR_MATERIAL);
+      glMaterialfv(GL_FRONT, GL_EMISSION, del.emision);
+      glMaterialfv(GL_FRONT, GL_AMBIENT, del.ambiente);
+      glMaterialfv(GL_FRONT, GL_DIFFUSE, del.difusa);
+      glMaterialfv(GL_FRONT, GL_SPECULAR, del.especular);
+      glMaterialf(GL_FRONT, GL_SHININESS, del.exp_brillo);
+
+      glColorMaterial(GL_FRONT, GL_EMISSION);
+      glColorMaterial(GL_FRONT, GL_AMBIENT);
+      glColorMaterial(GL_FRONT, GL_DIFFUSE);
+      glColorMaterial(GL_FRONT, GL_SPECULAR);
+      glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+
+      glMaterialfv(GL_BACK, GL_EMISSION, tra.emision);
+      glMaterialfv(GL_BACK, GL_AMBIENT, tra.ambiente);
+      glMaterialfv(GL_BACK, GL_DIFFUSE, tra.difusa);
+      glMaterialfv(GL_BACK, GL_SPECULAR, tra.especular);
+      glMaterialf(GL_BACK, GL_SHININESS, tra.exp_brillo);
+
+      glColorMaterial(GL_BACK, GL_EMISSION);
+      glColorMaterial(GL_BACK, GL_AMBIENT);
+      glColorMaterial(GL_BACK, GL_DIFFUSE);
+      glColorMaterial(GL_BACK, GL_SPECULAR);
+      glColorMaterial(GL_BACK, GL_AMBIENT_AND_DIFFUSE);
+
+      glEnable(GL_COLOR_MATERIAL);
+
+      glEnable(GL_LIGHTING);
+    }
+
+  else
+    {
+
+      //Si no hay luces
+
+      glDisable(GL_LIGHTING);
+    }
+
+  if (tex == NULL)
+    glDisable( GL_TEXTURE_2D );
+  else
+    tex->activar();
 
 }
 
@@ -271,13 +389,12 @@ FuenteLuz::FuenteLuz( GLfloat p_longi_ini, GLfloat p_lati_ini, const VectorRGB &
 
 void FuenteLuz::activar()
 {
-   // COMPLETAR: práctica 4: activar una fuente de luz (en GL_LIGHT0 + ind_fuente)
+   // TODO: práctica 4: activar una fuente de luz (en GL_LIGHT0 + ind_fuente)
    // .....
 
   glEnable (GL_LIGHT0 + ind_fuente);
 
-
-  glLightfv (GL_LIGHT0 + ind_fuente, GL_AMBIENT, (GLfloat*) col_ambiente);
+  glLightfv (GL_LIGHT0 + ind_fuente, GL_AMBIENT, (GLfloat*) &col_ambiente);
   glLightfv (GL_LIGHT0 + ind_fuente, GL_DIFFUSE, (GLfloat*) &col_difuso);
   glLightfv (GL_LIGHT0 + ind_fuente, GL_SPECULAR, (GLfloat*) &col_especular);
 
@@ -341,29 +458,31 @@ ColFuentesLuz::ColFuentesLuz()
 void ColFuentesLuz::insertar( FuenteLuz * pf )  // inserta una nueva
 {
    assert( pf != nullptr );
+   assert (vpf.size() <= 8);
 
    pf->ind_fuente = vpf.size() ;
    vpf.push_back( pf ) ;
+
 }
 //----------------------------------------------------------------------
-// activa una colección de fuentes de luz 
+// activa una colección de fuentes de luz
 
 void ColFuentesLuz::activar( unsigned id_prog )
 {
-   // COMPLETAR: práctica 4: activar una colección de fuentes de luz
+   // TODO: práctica 4: activar una colección de fuentes de luz
    // .....
 
+  glEnable(GL_RESCALE_NORMAL);
+  glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+  glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
   glEnable ( GL_LIGHTING );
 
-  if (vpf.size() < 8)
+  for( int i = 0; i < vpf.size(); i++)
+      vpf[i]->activar();
 
-    for (int i = 0; i < 8; i++)
+  for ( int i = vpf.size(); i < 8; i++)
       glDisable( GL_LIGHT0 + i);
 
-  else
-
-    for ( auto fuente: vpf)
-      fuente->activar();
 }
 
 //----------------------------------------------------------------------
@@ -382,4 +501,51 @@ ColFuentesLuz::~ColFuentesLuz()
       delete vpf[i] ;
       vpf[i] = NULL ;
    }
+}
+
+// *************************************************************************
+// *************************************************************************
+// *************************************************************************
+// *************************************************************************
+// *************************************************************************
+
+
+MaterialLata::MaterialLata() : Material() {
+
+  coloresCero();
+  iluminacion = true;
+
+  del.emision = tra.emision = Tupla4f(0.7, 0.7, 0.7, 1);
+  del.ambiente = tra.ambiente = Tupla4f(0.1, 0.1, 0.1, 1);
+  del.difusa = tra.difusa = Tupla4f(0.1, 0.1, 0.1, 1);
+  del.especular = tra.especular = Tupla4f(1, 1, 1, 1);
+  del.exp_brillo = tra.exp_brillo = 3;
+  tex = new Textura( "../imgs/lata-coke.jpg" ) ;
+
+  ponerNombre("Material CocaCola.");
+}
+
+
+MaterialTapasLata::MaterialTapasLata() {
+
+  del.emision = tra.emision = Tupla4f(0.7, 0.7, 0.7, 1);
+  del.ambiente = tra.ambiente = Tupla4f(0.1, 0.1, 0.1, 1);
+  del.difusa = tra.difusa = Tupla4f(0.1, 0.1, 0.1, 1);
+  del.especular = tra.especular = Tupla4f(1, 1, 1, 1);
+  del.exp_brillo = tra.exp_brillo = 3;
+
+}
+
+MaterialPeonMadera::MaterialPeonMadera(){
+  tex = new Textura("../imgs/text-madera.jpg");
+  // Duda: diferencia entre poner 1 y 2 aquí
+  
+  // s proporcional a la X, t a la Y
+
+  del.emision = tra.emision = Tupla4f(0.6, 0.6, 0.6, 1);
+  del.ambiente = tra.ambiente = Tupla4f(0.1, 0.1, 0.1, 1);
+  del.difusa = tra.difusa = Tupla4f(0.8, 0.8, 0.8, 1);
+  del.especular = tra.especular = Tupla4f(0.9, 0.9, 0.9, 1);
+  del.exp_brillo = tra.exp_brillo = 5;
+
 }

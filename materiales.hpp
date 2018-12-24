@@ -130,6 +130,8 @@ class TexturaXY : public Textura
    public: TexturaXY( const std::string & nom );
 } ;
 
+
+
 // *********************************************************************
 // Clase Material
 // ---------------------------------------------------------------------
@@ -236,7 +238,7 @@ protected:
 
 //**********************************************************************
 // Clase ConjuntoFuentes
-// ---------------
+// ---------------/
 // clase que contiene los atributos de una coleccion de fuentes de luz OpenGL
 
 class ColFuentesLuz
@@ -252,4 +254,36 @@ class ColFuentesLuz
    std::vector<FuenteLuz *> vpf ; // vector de punteros a fuentes
    GLint max_num_fuentes ;
 } ;
+
+
+// ***********************************************************************
+// Clase MaterialLata
+// ------------------
+// Clase para constuir un material con la imagen de la lata de cola.
+
+class MaterialLata : public Material
+{
+public:
+  MaterialLata() ;
+
+};
+
+class MaterialTapasLata : public Material
+{
+public:
+  MaterialTapasLata() ;
+
+};
+
+class MaterialPeonMadera : public Material
+{
+public:
+  MaterialPeonMadera(); 
+};
+
+
+
 #endif
+
+
+

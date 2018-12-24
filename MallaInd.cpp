@@ -57,7 +57,17 @@ void MallaInd::calcular_normales()
     Tupla3f base_1 = vertice_2 - vertice_1;
     Tupla3f base_2 = vertice_3 - vertice_1;
 
+
+    std::cout << "Vertice 1: " << vertice_1 << std::endl;
+    std::cout << "Vertice 2: " << vertice_2 << std::endl;
+    std::cout << "Vertice 3: " << vertice_3 << std::endl;
+
+    std::cout << "Base 1: " << base_1 << std::endl;
+    std::cout << "Base 2: " <<base_2 << std::endl;
+
     Tupla3f normal = base_1.cross(base_2).normalized();
+
+    std::cout << normal[0] << normal[1] << normal[2] << std::endl;
 
     nor_caras.push_back(normal);
 
@@ -218,7 +228,7 @@ void MallaInd::crearVBOs ()
     id_vbo_nor_ver = VBO_Crear (GL_ARRAY_BUFFER, num_ver, nor_vertices.data());
 
   if (!texturas.empty())
-    id_vbo_tex = VBO_Crear (GL_ARRAY_BUFFER, sizeof(float)*2L*num_ver, vertices.data());
+    id_vbo_tex = VBO_Crear (GL_ARRAY_BUFFER, sizeof(float)*2L*num_ver, texturas.data());
 
   vbo_creado = true;
 }
@@ -269,21 +279,31 @@ void MallaInd::visualizarGL( ContextoVis & cv )
 
   GLenum mode;
 
+
+
   switch(cv.modoVis){
   case modoSolido:
-    mode = GL_FILL;
+    glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+    cv.usarVBOs ? visualizarDE_VBOs(cv) : visualizarDE_MI(cv);
+
     break;
   case modoPuntos:
-    mode = GL_POINT;
+    glPolygonMode (GL_FRONT_AND_BACK, GL_POINT);
+    cv.usarVBOs ? visualizarDE_VBOs(cv) : visualizarDE_MI(cv);
+
     break;
+  case modoMateriales:
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    cv.usarVBOs ? visualizarVBOs_NT(cv) : visualizarDE_NT(cv);
+
   case modoAlambre:
   default:
     mode = GL_LINE;
-  }
+    glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+    cv.usarVBOs ? visualizarDE_VBOs(cv) : visualizarDE_MI(cv);
+}
 
-  glPolygonMode (GL_FRONT_AND_BACK, mode);
 
-  cv.usarVBOs ? visualizarDE_VBOs(cv) : visualizarDE_MI(cv);
 
 }
 // *****************************************************************************

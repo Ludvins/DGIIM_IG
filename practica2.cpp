@@ -38,7 +38,7 @@ void P2_Inicializar(  )
    // ...
 
    malla_ply = new MallaPLY("../plys/ant.ply");
-   malla_revol = new MallaRevol("../plys/peon.ply", 10, true, true, false);
+   malla_revol = new MallaRevol("../plys/peon.ply", 10, true, true, true);
    malla_revol2 = new MallaRevol("../plys/peon.ply", 10, true, false, false);
    cilindro = new Cilindro(2, 10, true, true, false);
    cono = new Cono(5, 100, true, true, false);

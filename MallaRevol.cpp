@@ -43,7 +43,7 @@ MallaRevol::MallaRevol( const std::string & nombre_arch,
    crearMallaRevol(perfil, nperfiles, crear_tapas, cerrar_malla, crear_texturas);
 
   // calcular la tabla de normales
-   calcular_normales();
+  calcular_normales();
 
 }
 
@@ -77,11 +77,11 @@ void MallaRevol::crearMallaRevol( const std::vector<Tupla3f>&  perfil_original,
 
   if (crear_texturas) // Si se van a crear texturas, inicializo un vector auxiliar de las distancias entre los puntos del perfil.
     {
-      distancias_perfil[0] = 0.0;
+      distancias_perfil.push_back(0.0);
       for (int i = 1; i < nvp; i++)
         {
           float d = norm(perfil_original[i] - perfil_original[i-1]);
-          distancias_perfil[i] = d ;
+          distancias_perfil.push_back(d) ;
           distancia_perfil += d;
         }
     }
