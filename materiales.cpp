@@ -240,14 +240,15 @@ Material::Material( const Tupla3f & colorAmbDif, float ka, float kd, float ks, f
 
   //color = colorAmbDif;
 
-  del.ambiente  =
-  del.difusa    =
-  tra.ambiente  =
-  tra.difusa    = {colorAmbDif[0], colorAmbDif[1], colorAmbDif[2], 1.0 };
-  del.especular =
-    tra.especular = {ks, ks, ks, 1.0};
-
-  del.exp_brillo = tra.exp_brillo = exp;
+   glColor3fv(colorAmbDif); //Establecemos el color que queremos utilizar a partir de ahora.
+   glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT); //Hacemos que el color ambiental y el difuso sean
+   glColorMaterial(GL_FRONT_AND_BACK,GL_DIFFUSE); //ese color que hemos establecido.
+   
+   //Esto de aquí es referido a la luz del material, no al color.
+   tra.ambiente=del.ambiente  = VectorRGB( ka, ka, ka, 1.0);
+   tra.difusa=del.difusa    = VectorRGB( kd, kd, kd, 1.0 );
+   tra.especular=del.especular = VectorRGB( ks, ks, ks, 1.0 );
+   tra.exp_brillo=del.exp_brillo = exp;
 
 }
 // ---------------------------------------------------------------------
