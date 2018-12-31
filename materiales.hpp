@@ -61,9 +61,9 @@ class PilaMateriales
 
 typedef enum
 {
-   mgct_desactivada,
    mgct_coords_objeto,
-   mgct_coords_ojo
+   mgct_coords_ojo,
+   mgct_desactivada
 }
    ModoGenCT ;
 
@@ -204,24 +204,22 @@ class FuenteLuz
    // p_longi_ini == valor inicial del ángulo horizontal en grados
    // p_lati_ini  == idem del ángulo vértical
    // p_color     == color de la fuente de luz (amb, dif y spec )
-   FuenteLuz( GLfloat p_longi_ini, GLfloat p_lati_ini, const VectorRGB & p_color ) ;
+   FuenteLuz( const VectorRGB & p_color ) ;
 
    // cambia el estado de OpenGL de forma que a partir de la llamada
    // se usará esta fuente de luz en los calculos del MIL
    // (en cada momento puede haber varias fuentes activadas)
-   void activar() ;
+   virtual void activar() = 0;
 
    // cambia los atributos de la instancia en respuesta a una pulsación
    // de una tecla 'especial' (según la terminología de 'glut')
-   bool gestionarEventoTeclaEspecial( int key ) ;
+  virtual bool gestionarEventoTeclaEspecial( int key ) = 0;
+  virtual void variarAngulo(unsigned angulo, float incremento) = 0;
 
    //-------------------------------------------------------------------
    // variables de instancia:
 
-public:
-    float
-      longi,      // longitud actual de la fuente direccional (en grados, entre 0 y 360)
-      lati ;      // latitud actual de la fuente direccional (en grados, entre -90 y 90)
+
 protected:
    VectorRGB
       col_ambiente,  // color de la fuente para la componente ambiental
@@ -229,12 +227,41 @@ protected:
       col_especular; // color de la fuente para la componente especular
    GLenum
       ind_fuente ;// indice de la fuente de luz en el vector, se asigna al insertarlo
-   float
-      longi_ini,  // valor inicial de 'longi'
-      lati_ini ;  // valor inicial de 'lati'
-
    friend class ColFuentesLuz ;
 } ;
+
+
+class FuenteLuzDireccional : public FuenteLuz{
+  public:
+    float
+      longi,      // longitud actual de la fuente direccional (en grados, entre 0 y 360) (ALPHA)
+      lati ;      // latitud actual de la fuente direccional (en grados, entre -90 y 90) (BETA)
+    const float
+       longi_ini,  // valor inicial de 'longi'
+       lati_ini ;  // valor inicial de 'lati'
+    // Inicializar la fuente de Fuente de Luz
+    FuenteLuzDireccional(float alpha_inicial, float beta_inicial, const VectorRGB & p_color);
+
+    void activar();
+    bool gestionarEventoTeclaEspecial(int key);
+
+    //Cambiar ángulo
+    //(ángulo==0->variar alpha,angulo==1 variar beta)
+    void variarAngulo(unsigned angulo, float incremento);
+
+};
+
+class FuenteLuzPosicional : public FuenteLuz{
+  public:
+    Tupla3f posicion;
+    FuenteLuzPosicional(const Tupla3f & posicion, const VectorRGB & p_color);
+    void activar();
+    bool gestionarEventoTeclaEspecial(int key);
+    void variarAngulo(unsigned angulo, float incremento){} //Definida por comodidad pero no hace nada
+};
+
+
+
 
 //**********************************************************************
 // Clase ConjuntoFuentes
@@ -261,27 +288,27 @@ class ColFuentesLuz
 // ------------------
 // Clase para constuir un material con la imagen de la lata de cola.
 
-class MaterialLata : public Material
-{
+
+class MaterialLata : public Material{
 public:
-  MaterialLata() ;
-
+  MaterialLata();
 };
-
-class MaterialTapasLata : public Material
-{
+class MaterialTapasLata : public Material{
 public:
-  MaterialTapasLata() ;
-
+  MaterialTapasLata();
 };
-
-class MaterialPeonMadera : public Material
-{
+class MaterialPeonMadera : public Material{
 public:
-  MaterialPeonMadera(); 
+  MaterialPeonMadera();
 };
-
-
+class MaterialPeonBlanco : public Material{
+public:
+  MaterialPeonBlanco();
+};
+class MaterialPeonNegro : public Material{
+public:
+  MaterialPeonNegro();
+};
 
 #endif
 

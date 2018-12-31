@@ -282,7 +282,7 @@ void FGE_PulsarTeclaCaracter( GLFWwindow* window, unsigned int codepoint )
         break;
       case 'M' :
          contextoVis.modoVis = ModosVis((int(contextoVis.modoVis)+1) % numModosVis) ;
-         cout << "modo de visualización cambiado a: '" << nombreModo[contextoVis.modoVis] << "'" << endl << flush ;
+         cout << "Modo de visualización cambiado a: '" << nombreModo[contextoVis.modoVis] << "'" << endl << flush ;
          break ;
 
       default:

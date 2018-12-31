@@ -130,6 +130,36 @@ class NodoGrafoEscenaParam : public NodoGrafoEscena
 } ;
 
 
+class Peones : public NodoGrafoEscenaParam{
+protected:
+
+  class PeonMadera : public NodoGrafoEscena{
+  public:
+    PeonMadera();
+  };
+  class PeonBlanco : public NodoGrafoEscena{
+  public:
+    PeonBlanco();
+  };
+  class PeonNegro : public NodoGrafoEscena{
+  public:
+    PeonNegro();
+  };
+
+public:
+  Peones();
+};
+
+class CocaCola : public NodoGrafoEscenaParam{
+protected:
+  class Cuerpo : public NodoGrafoEscena{
+  public:
+    Cuerpo();
+  };
+
+public: CocaCola();
+};
+
 class Muneco : public NodoGrafoEscenaParam {
 
  public:

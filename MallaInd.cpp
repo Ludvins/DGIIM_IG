@@ -42,11 +42,9 @@ void MallaInd::calcular_normales()
 
   std::cout << "Calcular normales:" << std::endl;
 
-  assert(!vertices.empty());
+  assert(!vertices.empty() && !caras.empty());
 
-  for(int i = 0; i < vertices.size(); i++){
-    nor_vertices.push_back({0,0,0});
-  }
+  nor_vertices=std::vector<Tupla3f>(vertices.size(),Tupla3f{0.0,0.0,0.0});
 
   for( auto cara : caras ){
 
@@ -58,16 +56,16 @@ void MallaInd::calcular_normales()
     Tupla3f base_2 = vertice_3 - vertice_1;
 
 
-    std::cout << "Vertice 1: " << vertice_1 << std::endl;
-    std::cout << "Vertice 2: " << vertice_2 << std::endl;
-    std::cout << "Vertice 3: " << vertice_3 << std::endl;
+    // std::cout << "Vertice 1: " << vertice_1 << std::endl;
+    // std::cout << "Vertice 2: " << vertice_2 << std::endl;
+    // std::cout << "Vertice 3: " << vertice_3 << std::endl;
 
-    std::cout << "Base 1: " << base_1 << std::endl;
-    std::cout << "Base 2: " <<base_2 << std::endl;
+    // std::cout << "Base 1: " << base_1 << std::endl;
+    // std::cout << "Base 2: " <<base_2 << std::endl;
 
     Tupla3f normal = base_1.cross(base_2).normalized();
 
-    std::cout << normal[0] << normal[1] << normal[2] << std::endl;
+    //std::cout << normal[0] << normal[1] << normal[2] << std::endl;
 
     nor_caras.push_back(normal);
 
@@ -104,15 +102,17 @@ void MallaInd::setColorVertices(std::vector<Tupla3f>* colores)
 
 void MallaInd::visualizarDE_NT ( ContextoVis& cv ){
 
-  glVertexPointer (3, GL_FLOAT, 0, vertices.data());
-  glTexCoordPointer (2, GL_FLOAT, 0, texturas.data());
-  glNormalPointer (GL_FLOAT, 0, nor_vertices.data());
+  assert(num_caras != 0 && !caras.empty());
 
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_NORMAL_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-  glDrawElements(GL_TRIANGLES, num_caras, GL_UNSIGNED_INT, caras.data());
+  glVertexPointer (3, GL_FLOAT, 0, vertices.data());
+  glTexCoordPointer (2, GL_FLOAT, 0, texturas.data());
+  glNormalPointer (GL_FLOAT, 0, nor_vertices.data());
+
+  glDrawElements(GL_TRIANGLES, 3*num_caras, GL_UNSIGNED_INT, caras.data());
 
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_NORMAL_ARRAY);
@@ -124,21 +124,28 @@ void MallaInd::visualizarDE_NT ( ContextoVis& cv ){
 
 void MallaInd::visualizarVBOs_NT( ContextoVis& cv)
 {
-  // activar VBO de coordenadas de normales
-  glBindBuffer (GL_ARRAY_BUFFER, id_vbo_nor_ver);
-  glNormalPointer( GL_FLOAT, 0, 0);
-  glEnableClientState (GL_NORMAL_ARRAY );
+  if (!vbo_creado) crearVBOs();
+  if (texturas.empty())
+    std::cout << "JAJA LMAO " << std::endl;
 
-  // activar VBO de coordenadas de texturas.
-  glBindBuffer( GL_ARRAY_BUFFER, id_vbo_tex );
-  glTexCoordPointer( 2, GL_FLOAT, 0, 0 );
-  glEnableClientState (GL_TEXTURE_COORD_ARRAY );
+  if(!texturas.empty())
+    {
+    glBindBuffer(GL_ARRAY_BUFFER,id_vbo_tex);
+    glTexCoordPointer(2,GL_FLOAT,0,0);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  }
+
+  if(!nor_vertices.empty())
+    {
+    glBindBuffer(GL_ARRAY_BUFFER,id_vbo_nor_ver);
+    glNormalPointer(GL_FLOAT,0,0);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    }
 
   // visualizar (el mismo método ya visto)
   visualizarDE_VBOs(cv);
 
   // Desactivar punteros a tablas
-  glDisableClientState (GL_NORMAL_ARRAY );
   glDisableClientState ( GL_TEXTURE_COORD_ARRAY);
 
 }
@@ -213,22 +220,19 @@ GLuint VBO_Crear (GLuint tipo, GLuint size, GLvoid* p)
 void MallaInd::crearVBOs ()
 {
 
-  num_ver = sizeof(float)*3*vertices.size();
-  num_caras = sizeof(unsigned)*3*caras.size();
-
   // GL_ARRAY_BUFFER - Vertex attributes
   // GL_ELEMENT_ARRAY_BUFFER - Vertex array indices.
-  id_vbo_ver = VBO_Crear( GL_ARRAY_BUFFER, num_ver, vertices.data());
-  id_vbo_caras = VBO_Crear( GL_ELEMENT_ARRAY_BUFFER, num_caras, caras.data()) ;
+  id_vbo_ver = VBO_Crear( GL_ARRAY_BUFFER,  sizeof(float)*3L*vertices.size(),vertices.data());
+  id_vbo_caras = VBO_Crear( GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*3L*caras.size(), caras.data()) ;
 
   if (!col_ver.empty())
-      id_vbo_col_ver = VBO_Crear (GL_ARRAY_BUFFER, num_ver, col_ver.data());
+    id_vbo_col_ver = VBO_Crear (GL_ARRAY_BUFFER, sizeof(float)*3L*vertices.size(), col_ver.data());
 
   if (!nor_vertices.empty())
-    id_vbo_nor_ver = VBO_Crear (GL_ARRAY_BUFFER, num_ver, nor_vertices.data());
+    id_vbo_nor_ver = VBO_Crear (GL_ARRAY_BUFFER,sizeof(float)*3L*vertices.size(), nor_vertices.data());
 
   if (!texturas.empty())
-    id_vbo_tex = VBO_Crear (GL_ARRAY_BUFFER, sizeof(float)*2L*num_ver, texturas.data());
+    id_vbo_tex = VBO_Crear (GL_ARRAY_BUFFER, sizeof(float)*2L*texturas.size(), texturas.data());
 
   vbo_creado = true;
 }
@@ -279,28 +283,46 @@ void MallaInd::visualizarGL( ContextoVis & cv )
 
   GLenum mode;
 
-
-
+  num_ver = vertices.size();
+  num_caras = caras.size();
+ 
   switch(cv.modoVis){
   case modoSolido:
     glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+    glShadeModel(GL_SMOOTH);
     cv.usarVBOs ? visualizarDE_VBOs(cv) : visualizarDE_MI(cv);
 
     break;
   case modoPuntos:
     glPolygonMode (GL_FRONT_AND_BACK, GL_POINT);
+    glShadeModel(GL_FLAT);
     cv.usarVBOs ? visualizarDE_VBOs(cv) : visualizarDE_MI(cv);
 
     break;
   case modoMateriales:
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glShadeModel(GL_SMOOTH);
     cv.usarVBOs ? visualizarVBOs_NT(cv) : visualizarDE_NT(cv);
+    break;
+
+  case modoColorNodoPlano:
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glShadeModel(GL_FLAT);
+    cv.usarVBOs ? visualizarVBOs_NT(cv) : visualizarDE_NT(cv);
+    break;
+
+  case modoColorNodoSuave:
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glShadeModel(GL_SMOOTH);
+    cv.usarVBOs ? visualizarVBOs_NT(cv) : visualizarDE_NT(cv);
+    break;
 
   case modoAlambre:
   default:
-    mode = GL_LINE;
+    glShadeModel(GL_FLAT);
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
     cv.usarVBOs ? visualizarDE_VBOs(cv) : visualizarDE_MI(cv);
+    break;
 }
 
 

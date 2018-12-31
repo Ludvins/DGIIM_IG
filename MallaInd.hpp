@@ -26,7 +26,6 @@ protected:
   std::vector <Tupla3f> col_ver;
   std::vector <Tupla3f> col_caras;
   std::vector <Tupla2f> texturas;
-  //std::vector <GLfloat> textura_vertice;
 
   GLuint id_vbo_ver = 0;
   GLuint id_vbo_caras = 0;
@@ -36,6 +35,7 @@ protected:
 
   unsigned num_ver = 0;
   unsigned num_caras = 0;
+  unsigned num_tex = 0;
 
   bool vbo_creado = false;
 

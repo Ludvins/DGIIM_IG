@@ -20,10 +20,4 @@ public:
   Lata();
 };
 
-class PeonMadera : public NodoGrafoEscena
-{
-public:
-  PeonMadera();
-};
-
 #endif

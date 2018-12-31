@@ -83,6 +83,7 @@ void NodoGrafoEscena::visualizarGL( ContextoVis& cv )
 {
    // DONE: práctica 3: recorrer las entradas y visualizar el nodo
    // ........
+  cv.pilaMateriales.push();
 
   glMatrixMode ( GL_MODELVIEW );   //operamos sobre la modelview
   glPushMatrix();                  // guarda la model view actual;
@@ -102,6 +103,10 @@ void NodoGrafoEscena::visualizarGL( ContextoVis& cv )
         glMultMatrixf ( *(entradas[i].matriz ) );
         break;
 
+      case TipoEntNGE::material:
+        cv.pilaMateriales.activarMaterial(entradas[i].material);
+        break;
+
       default:
         std::cout << "Tipo no contemplado" << std::endl;
         break;
@@ -110,7 +115,7 @@ void NodoGrafoEscena::visualizarGL( ContextoVis& cv )
   glMatrixMode ( GL_MODELVIEW );
   glPopMatrix();
 
-
+  cv.pilaMateriales.pop();  
 }
 
 
@@ -259,6 +264,39 @@ void NodoGrafoEscenaParam::siguienteCuadro()
 // -----------------------------------------------------------------------------
 
 
+Peones::PeonMadera::PeonMadera(){
+  agregar(MAT_Traslacion(Tupla3f{-5.0,0.0,0.0}));
+  agregar(new MaterialPeonMadera());
+  agregar(new MallaRevol("../plys/peon.ply",10,true,false,true));
+}
+Peones::PeonBlanco::PeonBlanco(){
+  agregar(MAT_Traslacion(Tupla3f{0.0,0.0,0.0}));
+  agregar(new MaterialPeonBlanco());
+  agregar(new MallaRevol("../plys/peon.ply",10,true,false,true));
+}
+Peones::PeonNegro::PeonNegro(){
+  agregar(MAT_Traslacion(Tupla3f{5.0,0.0,0.0}));
+  agregar(new MaterialPeonNegro);
+  agregar(new MallaRevol("../plys/peon.ply",10,true,false,true));
+}
+Peones::Peones(){
+  agregar(new PeonMadera());
+  agregar(new PeonBlanco());
+  agregar(new PeonNegro());
+
+}
+
+
+CocaCola::CocaCola(){
+  //agregar(new TapaArriba());
+  agregar(new Cuerpo());
+  //agregar(new TapaAbajo());
+}
+CocaCola::Cuerpo::Cuerpo(){
+  agregar(MAT_Traslacion(Tupla3f{0.0,0.0,0.0}));
+  agregar(new MaterialLata());
+  agregar(new MallaRevol("../plys/lata-pcue.ply",10,false ,false,true));
+}
 Muneco::Muneco()
 {
   Cilindro* c = new Cilindro(2, 20, true, true, false);

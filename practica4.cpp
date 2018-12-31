@@ -10,7 +10,6 @@
 #include "practicas.hpp"
 #include "practica3.hpp"
 #include "grafo-escena.hpp"
-#include "practica4.hpp"
 
 
 using namespace std ;
@@ -22,12 +21,10 @@ string p4_peon_file = "../plys/peon.ply";
 string p4_lata_file = "../plys/lata-pcue.ply";
 string p4_lata_inf = "../plys/lata-pinf.ply";
 string p4_lata_sup = "../plys/lata-psup.ply";
-uint p4_resolucion_objs = 50;
+uint p4_resolucion_objs = 4;
 static unsigned objetoActivo4 = 0;
 static constexpr int numObjetos4 = 2;
 static NodoGrafoEscena* objetos4[numObjetos4] = {nullptr, nullptr};
-static PeonMadera* peonmadera = nullptr;
-static Lata* lata = nullptr;
 
 ColFuentesLuz p4_fuentes;
 int p4_angulo_actual;
@@ -44,10 +41,9 @@ void P4_Inicializar(  )
 
    cout << "Creando objetos de la práctica 4 .... " << flush ;
 
-   p4_fuentes.insertar(new FuenteLuz(-10,0,{1.0, 1.0, 1.0, 1.0}));
-
-   objetos4[0] = new PeonMadera();
-   //objetos4[0] = new Lata();
+   p4_fuentes.insertar(new FuenteLuzDireccional(-10,30,Tupla4f{0.5,0.4,0,1.0}));
+   //objetos4[0] = new Peones();
+   objetos4[0] = new CocaCola();
    // COMPLETAR: práctica 4: inicializar objetos de la práctica 4
    // ....
 
@@ -111,24 +107,8 @@ void P4_DibujarObjetos( ContextoVis & cv )
   glEnable(GL_LIGHTING);
 
   objetos4[objetoActivo4]->visualizarGL(cv);
+  p4_fuentes.activar(cv.modoVis);
 
   glDisable(GL_LIGHTING);
 }
 
-
-
-Lata::Lata(){
-  //agregar(new MaterialTapasLata);
-  //agregar(new MallaRevol(&p4_lata_inf[0], p4_resolucion_objs, false, false, false));
-  agregar(new MallaRevol(&p4_lata_sup[0], p4_resolucion_objs, false, false, false));
-  agregar(new MaterialLata);
-  agregar(new MallaRevol(&p4_lata_file[0], p4_resolucion_objs, false, false, false));
-}
-
-
-PeonMadera::PeonMadera(){
-
-  agregar(new MaterialPeonMadera);
-
-  agregar(new MallaRevol(&p4_peon_file[0], p4_resolucion_objs, false, false, true));
-}
