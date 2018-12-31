@@ -97,12 +97,14 @@ void Textura::enviar()
 
   if (modo_gen_ct == mgct_coords_objeto)
     {
+      cout << "Enviar textura: Modo objeto" << endl;
       glTexGenfv ( GL_S, GL_OBJECT_PLANE, coefs_s );
       glTexGenfv ( GL_T, GL_OBJECT_PLANE, coefs_t );
     }
 
   if (modo_gen_ct == mgct_coords_ojo)
     {
+      cout << "Enviar textura: modo ojo" <<endl;
       glTexGenfv ( GL_S, GL_EYE_PLANE, coefs_s );
       glTexGenfv ( GL_T, GL_EYE_PLANE, coefs_t );
     }
@@ -115,7 +117,7 @@ void Textura::enviar()
                     (GLsizei)imagen->tamX(),
                     (GLsizei)imagen->tamY(),
                     GL_RGB,
-                    GL_UNSIGNED_INT,
+                    GL_UNSIGNED_BYTE,
                     imagen->leerPixels()
                     );
 
@@ -164,6 +166,7 @@ void Textura::activar(  )
 
   else
     {
+      cout << "Enviar textura: Modo desactivada" << endl;
       glDisable( GL_TEXTURE_GEN_S );
       glDisable( GL_TEXTURE_GEN_T );
     }

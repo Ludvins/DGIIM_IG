@@ -104,15 +104,16 @@ void MallaInd::visualizarDE_NT ( ContextoVis& cv ){
 
   assert(num_caras != 0 && !caras.empty());
 
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_NORMAL_ARRAY);
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
   glVertexPointer (3, GL_FLOAT, 0, vertices.data());
   glTexCoordPointer (2, GL_FLOAT, 0, texturas.data());
   glNormalPointer (GL_FLOAT, 0, nor_vertices.data());
 
-  glDrawElements(GL_TRIANGLES, 3*num_caras, GL_UNSIGNED_INT, caras.data());
+
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_NORMAL_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+  glDrawElements(GL_TRIANGLES, 3*caras.size(), GL_UNSIGNED_INT, caras.data());
 
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_NORMAL_ARRAY);
@@ -130,6 +131,7 @@ void MallaInd::visualizarVBOs_NT( ContextoVis& cv)
 
   if(!texturas.empty())
     {
+      std::cout << "buffer texturas" << std::endl;
     glBindBuffer(GL_ARRAY_BUFFER,id_vbo_tex);
     glTexCoordPointer(2,GL_FLOAT,0,0);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -146,6 +148,7 @@ void MallaInd::visualizarVBOs_NT( ContextoVis& cv)
   visualizarDE_VBOs(cv);
 
   // Desactivar punteros a tablas
+  glDisableClientState (GL_NORMAL_ARRAY);
   glDisableClientState ( GL_TEXTURE_COORD_ARRAY);
 
 }
@@ -285,20 +288,20 @@ void MallaInd::visualizarGL( ContextoVis & cv )
 
   num_ver = vertices.size();
   num_caras = caras.size();
- 
+
   switch(cv.modoVis){
   case modoSolido:
     glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
     glShadeModel(GL_SMOOTH);
     cv.usarVBOs ? visualizarDE_VBOs(cv) : visualizarDE_MI(cv);
-
     break;
+
   case modoPuntos:
     glPolygonMode (GL_FRONT_AND_BACK, GL_POINT);
     glShadeModel(GL_FLAT);
     cv.usarVBOs ? visualizarDE_VBOs(cv) : visualizarDE_MI(cv);
-
     break;
+
   case modoMateriales:
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glShadeModel(GL_SMOOTH);

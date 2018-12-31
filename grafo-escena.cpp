@@ -112,10 +112,11 @@ void NodoGrafoEscena::visualizarGL( ContextoVis& cv )
         break;
       }
 
+  cv.pilaMateriales.pop();
+
   glMatrixMode ( GL_MODELVIEW );
   glPopMatrix();
 
-  cv.pilaMateriales.pop();  
 }
 
 

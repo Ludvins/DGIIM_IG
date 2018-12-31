@@ -42,7 +42,7 @@ void P4_Inicializar(  )
    cout << "Creando objetos de la práctica 4 .... " << flush ;
 
    p4_fuentes.insertar(new FuenteLuzDireccional(-10,30,Tupla4f{0.5,0.4,0,1.0}));
-   //objetos4[0] = new Peones();
+   objetos4[1] = new Peones();
    objetos4[0] = new CocaCola();
    // COMPLETAR: práctica 4: inicializar objetos de la práctica 4
    // ....

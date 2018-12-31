@@ -96,7 +96,7 @@ void MallaRevol::crearMallaRevol( const std::vector<Tupla3f>&  perfil_original,
           vertices.push_back(vec);
 
           if (crear_texturas) //Si se van a crear texturas.
-              texturas.push_back({1.0*i/(nperfiles-1), distancias_perfil[j]/distancia_total});
+              texturas.push_back({1 - 1.0*i/(nperfiles-1),1- distancias_perfil[j]/distancia_total});
         }
     }
 
