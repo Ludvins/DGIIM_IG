@@ -264,14 +264,19 @@ void NodoGrafoEscenaParam::siguienteCuadro()
 
 // -----------------------------------------------------------------------------
 
+EscenaP4::EscenaP4(){
+  ponerNombre( "Clase práctica 4" );
+  agregar( new Peones());
+  agregar( new CocaCola() );
+}
 
 Peones::PeonMadera::PeonMadera(){
-  agregar(MAT_Traslacion(Tupla3f{-5.0,0.0,0.0}));
+  agregar(MAT_Traslacion(Tupla3f{5.0,0.0,0.0}));
   agregar(new MaterialPeonMadera());
   agregar(new MallaRevol("../plys/peon.ply",10,true,false,true));
 }
 Peones::PeonBlanco::PeonBlanco(){
-  agregar(MAT_Traslacion(Tupla3f{0.0,0.0,0.0}));
+  agregar(MAT_Traslacion(Tupla3f{5.0,0.0,0.0}));
   agregar(new MaterialPeonBlanco());
   agregar(new MallaRevol("../plys/peon.ply",10,true,false,true));
 }
@@ -282,22 +287,35 @@ Peones::PeonNegro::PeonNegro(){
 }
 Peones::Peones(){
   agregar(new PeonMadera());
+  agregar( MAT_Rotacion(-45,0,1,0));
   agregar(new PeonBlanco());
+  agregar( MAT_Rotacion(-45,0,1,0));
   agregar(new PeonNegro());
 
 }
 
 
 CocaCola::CocaCola(){
-  //agregar(new TapaArriba());
+  agregar(new TapaArriba());
   agregar(new Cuerpo());
-  //agregar(new TapaAbajo());
+  agregar(new TapaAbajo());
 }
 CocaCola::Cuerpo::Cuerpo(){
   agregar(MAT_Traslacion(Tupla3f{0.0,0.0,0.0}));
   agregar(new MaterialLata());
-  agregar(new MallaRevol("../plys/lata-pcue.ply",10,false ,false,true));
+  agregar(new MallaRevol("../plys/lata-pcue.ply",10, false,false,true));
 }
+CocaCola::TapaArriba::TapaArriba () {
+  agregar( new MaterialTapasLata() );
+  agregar( new MallaRevol("../plys/lata-psup.ply", 10, true, false, true) );
+}
+
+CocaCola::TapaAbajo::TapaAbajo () {
+  agregar( new MaterialTapasLata() );
+  agregar( new MallaRevol("../plys/lata-pinf.ply", 10, true, false, true) );
+}
+
+
 Muneco::Muneco()
 {
   Cilindro* c = new Cilindro(2, 20, true, true, false);

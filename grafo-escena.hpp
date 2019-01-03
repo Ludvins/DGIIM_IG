@@ -156,8 +156,21 @@ protected:
   public:
     Cuerpo();
   };
+  class TapaAbajo : public NodoGrafoEscena{
+  public:
+    TapaAbajo();
+  };
+  class TapaArriba : public NodoGrafoEscena {
+  public:
+    TapaArriba();
+  };
 
 public: CocaCola();
+};
+
+class EscenaP4 : public NodoGrafoEscenaParam {
+public:
+  EscenaP4();
 };
 
 class Muneco : public NodoGrafoEscenaParam {

@@ -257,7 +257,7 @@ class FuenteLuzPosicional : public FuenteLuz{
     FuenteLuzPosicional(const Tupla3f & posicion, const VectorRGB & p_color);
     void activar();
     bool gestionarEventoTeclaEspecial(int key);
-    void variarAngulo(unsigned angulo, float incremento){} //Definida por comodidad pero no hace nada
+  void variarAngulo(unsigned angulo, float incremento){}; //Definida por comodidad pero no hace nada
 };
 
 

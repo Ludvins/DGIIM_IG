@@ -191,8 +191,8 @@ void VisualizarFrame()
    // hacer que la ventana GLFW sea la ventana actual
    glfwMakeContextCurrent( glfw_window );
 
-   if (contextoVis.usarShader)
-     shader_prog->activar();
+   //if (contextoVis.usarShader)
+   //  shader_prog->activar();
 
    DibujarEscena();  // ordenes OpenGL para dibujar la escena correspondiente a la práctica actual
 

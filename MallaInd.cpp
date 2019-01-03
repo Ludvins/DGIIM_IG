@@ -56,12 +56,12 @@ void MallaInd::calcular_normales()
     Tupla3f base_2 = vertice_3 - vertice_1;
 
 
-    // std::cout << "Vertice 1: " << vertice_1 << std::endl;
-    // std::cout << "Vertice 2: " << vertice_2 << std::endl;
-    // std::cout << "Vertice 3: " << vertice_3 << std::endl;
+    std::cout << "Vertice 1: " << vertice_1 << std::endl;
+    std::cout << "Vertice 2: " << vertice_2 << std::endl;
+    std::cout << "Vertice 3: " << vertice_3 << std::endl;
 
-    // std::cout << "Base 1: " << base_1 << std::endl;
-    // std::cout << "Base 2: " <<base_2 << std::endl;
+    std::cout << "Base 1: " << base_1 << std::endl;
+    std::cout << "Base 2: " <<base_2 << std::endl;
 
     Tupla3f normal = base_1.cross(base_2).normalized();
 
@@ -126,12 +126,9 @@ void MallaInd::visualizarDE_NT ( ContextoVis& cv ){
 void MallaInd::visualizarVBOs_NT( ContextoVis& cv)
 {
   if (!vbo_creado) crearVBOs();
-  if (texturas.empty())
-    std::cout << "JAJA LMAO " << std::endl;
 
   if(!texturas.empty())
     {
-      std::cout << "buffer texturas" << std::endl;
     glBindBuffer(GL_ARRAY_BUFFER,id_vbo_tex);
     glTexCoordPointer(2,GL_FLOAT,0,0);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);

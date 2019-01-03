@@ -40,12 +40,12 @@ void P4_Inicializar(  )
 {
 
    cout << "Creando objetos de la práctica 4 .... " << flush ;
+   p4_angulo_actual = 0;
 
-   p4_fuentes.insertar(new FuenteLuzDireccional(-10,30,Tupla4f{0.5,0.4,0,1.0}));
-   objetos4[1] = new Peones();
-   objetos4[0] = new CocaCola();
-   // COMPLETAR: práctica 4: inicializar objetos de la práctica 4
-   // ....
+   p4_fuentes.insertar(new FuenteLuzDireccional(-10,30,Tupla4f{0.5,0.5,0.5,1.0}));
+   p4_fuentes.insertar( new FuenteLuzPosicional( {10,10,10}, {1,1,1,0} ) );
+   //objetos4[1] = new Peones();
+   objetos4[0] = new EscenaP4();
 
    cout << "hecho." << endl << flush ;
 }
@@ -65,26 +65,49 @@ bool P4_FGE_PulsarTeclaCaracter( unsigned char tecla )
 
    switch ( toupper( tecla ) )
    {
+
+   case 'O' :
+
+     objetoActivo4 = (objetoActivo4+1) % numObjetos4 ;
+     cout << "Práctica 4: nuevo objeto activo es: " << objetoActivo4;
+     if ( objetos4[objetoActivo4] != nullptr )
+       cout << " (" << objetos4[objetoActivo4]->leerNombre() << ")." << endl ;
+     else
+       cout << " (objeto no creado)" << endl ;
+
+     res = true ;
+
+     break ;
+
       case 'G' :
          // COMPLETAR: práctica 4: activar el siguiente ángulo (longitud o latitud)
          // ....
         // Conmutamos entre alpha y beta
-        p4_angulo_actual += 1;
-        p4_angulo_actual %= 2;
+
+        if (p4_angulo_actual == 0) {
+          std::cout << "Ángulo actual: beta" << std::endl;
+          p4_angulo_actual = 1;
+        }
+        else if (p4_angulo_actual == 1) {
+          std::cout << "Ángulo actual: alpha" << std::endl;
+          p4_angulo_actual = 0;
+        }
          break ;
+
+         res = true;
 
       case '>' :
          // COMPLETAR: práctica 4: incrementar el ángulo activo
          // ....
         res = true;
-        //p4_fuentes.ptrFuente(0)->variarAngulo( 0, p4_angulo_actual, 15.0);
+        p4_fuentes.ptrFuente(0)->variarAngulo( p4_angulo_actual, 15.0);
         break;
 
       case '<' :
          // COMPLETAR: práctica 4: decrementar el ángulo activo
          // ....
         res = true;
-        //p4_fuentes.prtFuente(0)->variarAngulo( 0, p4_angulo_actual, -15.0 );
+        p4_fuentes.ptrFuente(0)->variarAngulo( p4_angulo_actual, -15.0 );
         break;
 
       default :

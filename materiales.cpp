@@ -166,7 +166,6 @@ void Textura::activar(  )
 
   else
     {
-      cout << "Enviar textura: Modo desactivada" << endl;
       glDisable( GL_TEXTURE_GEN_S );
       glDisable( GL_TEXTURE_GEN_T );
     }
@@ -383,6 +382,14 @@ FuenteLuz::FuenteLuz( const VectorRGB & p_color )
 
 //----------------------------------------------------------------------
 
+
+void FuenteLuzDireccional::variarAngulo (unsigned angulo, float incremento){
+  if (angulo == 0)
+    longi += incremento;
+  else
+    lati += incremento;
+}
+
 bool FuenteLuzDireccional::gestionarEventoTeclaEspecial( int key )
 {
    bool actualizar = true ;
@@ -411,8 +418,8 @@ bool FuenteLuzDireccional::gestionarEventoTeclaEspecial( int key )
          cout << "tecla no usable para la fuente de luz." << endl << flush ;
    }
 
-   //if ( actualizar )
-   //   cout << "fuente de luz cambiada: longi == " << longi << ", lati == " << lati << endl << flush ;
+   if ( actualizar )
+      cout << "fuente de luz cambiada: longi == " << longi << ", lati == " << lati << endl << flush ;
    return actualizar ;
 }
 
@@ -451,15 +458,6 @@ FuenteLuzDireccional::FuenteLuzDireccional(float alpha_inicial,float beta_inicia
   lati(beta_inicial)
   {}
 
- void FuenteLuzDireccional::variarAngulo(unsigned angulo, float incremento){
-   if(angulo==0){
-     longi+=incremento;
-   }else{
-     lati+=incremento;
-   }
-}
-
-
 FuenteLuzPosicional::FuenteLuzPosicional(const Tupla3f & posicion, const VectorRGB & p_color)
   : FuenteLuz(p_color), posicion(posicion){}
 
@@ -483,35 +481,9 @@ void FuenteLuzPosicional::activar()
 
 bool FuenteLuzPosicional::gestionarEventoTeclaEspecial( int key )
   {
-     bool actualizar = true ;
-     const float incr = 3.0f ;
+    cout << "tecla no usable para la fuente de luz." << endl << flush ;
 
-     switch( key )
-     {
-      /*  case GLFW_KEY_RIGHT:
-           longi = longi+incr ;
-           break ;
-        case GLFW_KEY_LEFT:
-           longi = longi-incr ;
-           break ;
-        case GLFW_KEY_UP:
-           lati = std::min( lati+incr, 90.0f) ;
-           break ;
-        case GLFW_KEY_DOWN:
-           lati = std::max( lati-incr, -90.0f ) ;
-           break ;
-        case GLFW_KEY_HOME:
-           lati  = lati_ini ;
-           longi = longi_ini ;
-           break ;*/
-        default :
-           actualizar = false ;
-           cout << "tecla no usable para la fuente de luz." << endl << flush ;
-     }
-
-     //if ( actualizar )
-     //   cout << "fuente de luz cambiada: longi == " << longi << ", lati == " << lati << endl << flush ;
-     return actualizar ;
+     return false ;
   }
 
 //**********************************************************************
@@ -582,8 +554,7 @@ ColFuentesLuz::~ColFuentesLuz()
 
 
 MaterialLata::MaterialLata()
-  : Material(new Textura("../imgs/lata-coke.jpg"),0.0,1,1,1){
-
+  : Material(new Textura("../imgs/lata-coke.jpg"),0.0,1.0,1.0,1.0){
 }
 MaterialTapasLata::MaterialTapasLata()
   : Material(NULL,0.0,1,1,1){
