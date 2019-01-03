@@ -64,7 +64,7 @@ bool P4_FGE_PulsarTeclaCaracter( unsigned char tecla )
    bool res = false  ; // valor devuelto: es true solo cuando se ha procesado alguna tecla
 
    switch ( toupper( tecla ) )
-   {
+   { 
 
    case 'O' :
 

@@ -171,6 +171,9 @@ void Textura::activar(  )
     }
 
 
+
+  glBindTexture(GL_TEXTURE_2D,ident_textura);
+
 }
 // *********************************************************************
 
@@ -558,18 +561,14 @@ MaterialLata::MaterialLata()
 }
 MaterialTapasLata::MaterialTapasLata()
   : Material(NULL,0.0,1,1,1){
-  del.emision=tra.emision=Tupla4f{0.2,0.2,0.2,1.0};
+  del.emision=tra.emision=Tupla4f{0.2,0.1,0.1,0.1};
 }
 MaterialPeonMadera::MaterialPeonMadera()
   : Material(new Textura("../imgs/text-madera.jpg"),0.0,1,1,1){
-  del.emision=tra.emision=Tupla4f{0.5,0.5,0.5,1.0};
 }
 MaterialPeonBlanco::MaterialPeonBlanco()
   : Material(NULL,0.0,1,0,0){
-  del.emision=tra.emision=Tupla4f{0.9,0.9,0.9,1.0};
-
 }
 MaterialPeonNegro::MaterialPeonNegro()
-  : Material(nullptr,0,0.2,1,1) {
-  del.emision=tra.emision=Tupla4f{0.0,0.0,0.0,1.0};
+  : Material(nullptr,0,0.01,0.1,000.1) {
 }
