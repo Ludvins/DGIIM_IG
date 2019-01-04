@@ -55,14 +55,6 @@ void MallaInd::calcular_normales()
     Tupla3f base_1 = vertice_2 - vertice_1;
     Tupla3f base_2 = vertice_3 - vertice_1;
 
-
-    std::cout << "Vertice 1: " << vertice_1 << std::endl;
-    std::cout << "Vertice 2: " << vertice_2 << std::endl;
-    std::cout << "Vertice 3: " << vertice_3 << std::endl;
-
-    std::cout << "Base 1: " << base_1 << std::endl;
-    std::cout << "Base 2: " <<base_2 << std::endl;
-
     Tupla3f normal = base_1.cross(base_2).normalized();
 
     //std::cout << normal[0] << normal[1] << normal[2] << std::endl;
@@ -119,6 +111,7 @@ void MallaInd::visualizarDE_NT ( ContextoVis& cv ){
   glDisableClientState(GL_NORMAL_ARRAY);
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
+
 }
 
 // ----------------------------------------------------------------------------
@@ -155,6 +148,8 @@ void MallaInd::visualizarDE_MI( ContextoVis & cv )
 {
    // DONE: en la práctica 1: visualizar en modo inmediato (glDrawElements)
    // ...........
+
+
 
 #if MODO_INMEDIATO
     glBegin (GL_TRIANGLES);
@@ -246,6 +241,7 @@ void MallaInd::visualizarDE_VBOs( ContextoVis & cv )
 
   // Inicializa VBO (solo una vez).
 
+
   if (!vbo_creado)
     crearVBOs();
 
@@ -281,7 +277,11 @@ void MallaInd::visualizarGL( ContextoVis & cv )
    //
    // .............
 
-  GLenum mode;
+
+  if (cv.modoVis != modoColorNodoPlano && cv.modoVis != modoColorNodoSuave){
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
+  }
 
   num_ver = vertices.size();
   num_caras = caras.size();
@@ -297,12 +297,6 @@ void MallaInd::visualizarGL( ContextoVis & cv )
     glPolygonMode (GL_FRONT_AND_BACK, GL_POINT);
     glShadeModel(GL_FLAT);
     cv.usarVBOs ? visualizarDE_VBOs(cv) : visualizarDE_MI(cv);
-    break;
-
-  case modoMateriales:
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glShadeModel(GL_SMOOTH);
-    cv.usarVBOs ? visualizarVBOs_NT(cv) : visualizarDE_NT(cv);
     break;
 
   case modoColorNodoPlano:

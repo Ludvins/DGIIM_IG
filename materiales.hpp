@@ -214,7 +214,6 @@ class FuenteLuz
    // cambia los atributos de la instancia en respuesta a una pulsación
    // de una tecla 'especial' (según la terminología de 'glut')
   virtual bool gestionarEventoTeclaEspecial( int key ) = 0;
-  virtual void variarAngulo(unsigned angulo, float incremento) = 0;
 
    //-------------------------------------------------------------------
    // variables de instancia:
@@ -257,7 +256,7 @@ class FuenteLuzPosicional : public FuenteLuz{
     FuenteLuzPosicional(const Tupla3f & posicion, const VectorRGB & p_color);
     void activar();
     bool gestionarEventoTeclaEspecial(int key);
-  void variarAngulo(unsigned angulo, float incremento){}; //Definida por comodidad pero no hace nada
+
 };
 
 
@@ -274,8 +273,10 @@ class ColFuentesLuz
    ColFuentesLuz() ; // crea la colección vacía
    ~ColFuentesLuz() ;
    void insertar( FuenteLuz * pf ) ; // inserta una nueva
-   void activar( unsigned id_prog ); // activa las fuentes de luz
+   void activar(); // activa las fuentes de luz
+  void desactivar (); // Desactiva las fuentes de luz
    FuenteLuz * ptrFuente( unsigned i ); // devuelve ptr a la fuente de luz numero i
+  int size() {return vpf.size();}
 
    private:
    std::vector<FuenteLuz *> vpf ; // vector de punteros a fuentes

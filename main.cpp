@@ -595,7 +595,7 @@ void Inicializa_Vars( )
 {
    // inicializar práctica actual
    practicaActual = 1 ;
-   contextoVis.modoVis = modoMateriales ;
+   contextoVis.modoVis = modoPuntos ;
 
 
 }

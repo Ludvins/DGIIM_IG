@@ -240,30 +240,25 @@ Material::Material( const Tupla3f & colorAmbDif, float ka, float kd, float ks, f
    // DONE: práctica 4: inicializar material usando colorAmbDif,ka,kd,ks,exp
    // .....
 
+   tex = NULL;
   iluminacion = true;
-  tex = nullptr;
-  ponerNombre("Material color plano e iluminación.") ;
 
+  color = {colorAmbDif[0], colorAmbDif[1], colorAmbDif[2], 1.0};
 
-  coloresCero();
+  del.emision   = VectorRGB(0.0,0.0,0.0, 1.0);
+  del.ambiente  = ka*color;
+  del.difusa    = kd*color;
+  del.especular = ks*color;
 
-  glColor3fv(colorAmbDif); //Establecemos el color que queremos utilizar a partir de ahora.
-  glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
-  //Hacemos que el color ambiental y el difuso sean ese color que hemos establecido.
+  tra.emision   = VectorRGB(0.0,0.0,0.0, 1.0);
+  tra.ambiente  = ka*color;
+  tra.difusa    = kd*color;
+  tra.especular = ks*color;
 
+  del.exp_brillo = exp;
+  tra.exp_brillo = exp;
 
-  tra.ambiente =
-    del.ambiente = VectorRGB( ka, ka, ka, 1.0);
-
-  tra.difusa =
-    del.difusa = VectorRGB( kd, kd, kd, 1.0 );
-
-  tra.especular =
-    del.especular = VectorRGB( ks, ks, ks, 1.0 );
-
-  tra.exp_brillo =
-    del.exp_brillo = exp;
-
+  ponerNombre("material INCREIBLE");
 
 }
 // ---------------------------------------------------------------------
@@ -422,7 +417,7 @@ bool FuenteLuzDireccional::gestionarEventoTeclaEspecial( int key )
    }
 
    if ( actualizar )
-      cout << "fuente de luz cambiada: longi == " << longi << ", lati == " << lati << endl << flush ;
+      cout << "Fuente de luz cambiada: Longitud: " << longi << ", Latitud: " << lati << endl << flush ;
    return actualizar ;
 }
 
@@ -466,18 +461,22 @@ FuenteLuzPosicional::FuenteLuzPosicional(const Tupla3f & posicion, const VectorR
 
 void FuenteLuzPosicional::activar()
   {
-     // COMPLETAR: práctica 4: activar una fuente de luz (en GL_LIGHT0 + ind_fuente)
-     if(ind_fuente>=0){
+     // DONE: práctica 4: activar una fuente de luz (en GL_LIGHT0 + ind_fuente)
+     if(ind_fuente >= 0){
        //Habilitamos
       glEnable(GL_LIGHT0+ind_fuente);
 
-      //Colores de ambiente
-      glLightfv(GL_LIGHT0+ind_fuente,GL_AMBIENT,col_ambiente);
-      glLightfv(GL_LIGHT0+ind_fuente,GL_DIFFUSE,col_difuso);
-      glLightfv(GL_LIGHT0+ind_fuente,GL_SPECULAR,col_especular);
+      //Colores
+      glLightfv(GL_LIGHT0+ind_fuente, GL_AMBIENT, col_ambiente);
+      glLightfv(GL_LIGHT0+ind_fuente, GL_DIFFUSE, col_difuso);
+      glLightfv(GL_LIGHT0+ind_fuente, GL_SPECULAR,col_especular);
 
 
-      glLightfv(GL_LIGHT0+ind_fuente,GL_POSITION,Tupla4f{posicion(X),posicion(Y),posicion(Z),1.0});
+      glLightfv(
+                GL_LIGHT0+ind_fuente,
+                GL_POSITION,
+                Tupla4f{ posicion(X), posicion(Y), posicion(Z), 1.0}
+                );
     }
 
   }
@@ -500,7 +499,11 @@ ColFuentesLuz::ColFuentesLuz()
 void ColFuentesLuz::insertar( FuenteLuz * pf )  // inserta una nueva
 {
    assert( pf != nullptr );
-   assert (vpf.size() <= max_num_fuentes);
+   if (vpf.size() == max_num_fuentes)
+     {
+       cout << "No se pueden insertar mas fuentes de luz" << endl;
+       return;
+     }
 
    pf->ind_fuente = vpf.size() ;
    vpf.push_back( pf ) ;
@@ -509,26 +512,33 @@ void ColFuentesLuz::insertar( FuenteLuz * pf )  // inserta una nueva
 //----------------------------------------------------------------------
 // activa una colección de fuentes de luz
 
-void ColFuentesLuz::activar( unsigned id_prog )
+void ColFuentesLuz::activar( )
 {
    // TODO: práctica 4: activar una colección de fuentes de luz
    // .....
 
 
-  if(id_prog==3 || id_prog==4){
     for(unsigned i=0; i<vpf.size();i++){
       vpf[i]->activar();
     }
     for(unsigned i=vpf.size(); i<max_num_fuentes;i++){
       glDisable(GL_LIGHT0+i);
     }
-  }else{
-    for(unsigned i=0; i<max_num_fuentes;i++){
-      glDisable(GL_LIGHT0+i);
-    }
+
+}
+
+void ColFuentesLuz::desactivar( )
+{
+  // TODO: práctica 4: activar una colección de fuentes de luz
+  // .....
+
+  for(unsigned i=0; i<vpf.size();i++){
+    glDisable(GL_LIGHT0+i);
   }
 
 }
+
+
 
 //----------------------------------------------------------------------
 FuenteLuz * ColFuentesLuz::ptrFuente( unsigned i )
@@ -560,15 +570,16 @@ MaterialLata::MaterialLata()
   : Material(new Textura("../imgs/lata-coke.jpg"),0.0,1.0,1.0,1.0){
 }
 MaterialTapasLata::MaterialTapasLata()
-  : Material(NULL,0.0,1,1,1){
-  del.emision=tra.emision=Tupla4f{0.2,0.1,0.1,0.1};
+  : Material(NULL,0.0,0.2,0.2,1){
 }
+
 MaterialPeonMadera::MaterialPeonMadera()
   : Material(new Textura("../imgs/text-madera.jpg"),0.0,1,1,1){
 }
+
 MaterialPeonBlanco::MaterialPeonBlanco()
-  : Material(NULL,0.0,1,0,0){
+  : Material({1.0, 1.0, 1.0},0.0,0,1,0){
 }
 MaterialPeonNegro::MaterialPeonNegro()
-  : Material(nullptr,0,0.01,0.1,000.1) {
+  : Material({0.2, 0.2, 0.2},0,0,2,5) {
 }
