@@ -16,6 +16,7 @@
 // --------------------------------------------------------------------
 // declaraciones adelantadas de clases (útiles para punteros)
 
+
 class ColFuentesLuz ;
 
 

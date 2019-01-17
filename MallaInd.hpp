@@ -12,6 +12,11 @@
 
 #include "Objeto3D.hpp"   // declaración de 'Objeto3D'
 // ---------------------------------------------------------------------
+
+// Funciones auxiliares
+
+Tupla3f calcularCentroDeCajaEnglobante (std::vector<Tupla3f> vertices);
+
 // clase para objetos gráficos genéricos
 
 class MallaInd : public Objeto3D
@@ -29,7 +34,7 @@ protected:
 
   GLuint id_vbo_ver = 0;
   GLuint id_vbo_caras = 0;
-  GLuint id_vbo_col_ver = 0;
+  GLuint id_vbo_col_ver = 0; 
   GLuint id_vbo_tex = 0;
   GLuint id_vbo_nor_ver = 0;
 
@@ -67,6 +72,7 @@ public:
   // Usar el mismo color para todos los vertices
   virtual void fijarColorNodo(const Tupla3f& color);
 
+  void calcularCentroOC();
 
 } ;
 

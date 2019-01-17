@@ -83,6 +83,9 @@ void NodoGrafoEscena::visualizarGL( ContextoVis& cv )
 {
    // DONE: práctica 3: recorrer las entradas y visualizar el nodo
    // ........
+  glDisable(GL_LIGHTING);
+  glDisable(GL_TEXTURE_2D);
+
   cv.pilaMateriales.push();
 
   glMatrixMode ( GL_MODELVIEW );   //operamos sobre la modelview
@@ -95,6 +98,10 @@ void NodoGrafoEscena::visualizarGL( ContextoVis& cv )
     switch ( entradas[i].tipo )
       {
       case TipoEntNGE::objeto:
+
+        if (cv.modoSeleccionFBO && identificador >= 0)
+          FijarColorIdent(identificador);
+
         entradas[i].objeto->visualizarGL(cv);
         break;
 
@@ -104,7 +111,8 @@ void NodoGrafoEscena::visualizarGL( ContextoVis& cv )
         break;
 
       case TipoEntNGE::material:
-        cv.pilaMateriales.activarMaterial(entradas[i].material);
+        if (!cv.modoSeleccionFBO)
+          cv.pilaMateriales.activarMaterial(entradas[i].material);
         break;
 
       default:
@@ -200,6 +208,29 @@ Matriz4f* NodoGrafoEscena::leerPtrMatriz( unsigned indice )
 void NodoGrafoEscena::calcularCentroOC()
 {
 
+  Matriz4f mm = MAT_Ident();
+  vector<Tupla3f> vertices_aux;
+
+  if ( !centro_calculado )
+    {
+      std::cout << "Calculando centro del grafo" << std::endl;
+      for (auto entrada : entradas) {
+
+        if (entrada.tipo == TipoEntNGE::objeto) {
+          entrada.objeto->calcularCentroOC();
+          vertices_aux.push_back(mm*entrada.objeto->leerCentroOC());
+        }
+
+        if (entrada.tipo == TipoEntNGE::transformacion){
+          mm = mm*(*entrada.matriz);
+        }
+      }
+      ponerCentroOC( calcularCentroDeCajaEnglobante(vertices_aux) );
+      centro_calculado = true;
+    }
+
+  cout << "Centro" << leerCentroOC() << endl;
+
    // COMPLETAR: práctica 5: calcular y guardar el centro del nodo
    //    en coordenadas de objeto (hay que hacerlo recursivamente)
    //   (si el centro ya ha sido calculado, no volver a hacerlo)
@@ -217,8 +248,38 @@ bool NodoGrafoEscena::buscarObjeto
    Tupla3f&         centro_wc   // (salida) centro del objeto en coordenadas del mundo
 )
 {
-   // COMPLETAR: práctica 5: buscar un sub-objeto con un identificador
-   // ........
+  // COMPLETAR: práctica 5: buscar un sub-objeto con un identificador
+  // ........
+  Matriz4f aux = mmodelado;
+
+  assert( 0 < ident_busc );
+
+  if(!centro_calculado) calcularCentroOC();
+
+  if ( leerIdentificador() == ident_busc )
+    {
+      centro_wc = mmodelado*leerCentroOC();
+      if ( objeto != nullptr )
+        *objeto = this ;
+      return true ;
+    }
+  else
+    {
+    for(auto entrada : entradas){
+
+      if (entrada.tipo == TipoEntNGE::objeto){
+        if (entrada.objeto->buscarObjeto(ident_busc, aux, objeto, centro_wc)){
+          return true;
+        }
+      }
+
+      else if (entrada.tipo == TipoEntNGE::transformacion){
+        aux = aux*(*entrada.matriz);
+      }
+    }
+    return false;
+
+    }
 
 }
 
@@ -266,26 +327,31 @@ void NodoGrafoEscenaParam::siguienteCuadro()
 
 EscenaP4::EscenaP4(){
   ponerNombre( "Clase práctica 4" );
+  ponerIdentificador(0);
   agregar( new Peones());
   agregar( new CocaCola() );
 }
 
 Peones::PeonMadera::PeonMadera(){
+  ponerIdentificador(2);
   agregar(MAT_Traslacion(Tupla3f{5.0,0.0,0.0}));
   agregar(new MaterialPeonMadera());
-  agregar(new MallaRevol("../plys/peon.ply",10,true,false,true));
+  agregar(new MallaRevol("../plys/peon.ply",30,true,false,true));
 }
 Peones::PeonBlanco::PeonBlanco(){
+  ponerIdentificador(3);
   agregar(MAT_Traslacion(Tupla3f{5.0,0.0,0.0}));
   agregar(new MaterialPeonBlanco());
-  agregar(new MallaRevol("../plys/peon.ply",10,true,false,true));
+  agregar(new MallaRevol("../plys/peon.ply",30,true,true,true));
 }
 Peones::PeonNegro::PeonNegro(){
+  ponerIdentificador(4);
   agregar(MAT_Traslacion(Tupla3f{5.0,0.0,0.0}));
   agregar(new MaterialPeonNegro);
-  agregar(new MallaRevol("../plys/peon.ply",10,true,false,true));
+  agregar(new MallaRevol("../plys/peon.ply",30,true,true,true));
 }
 Peones::Peones(){
+  ponerIdentificador(5);
   agregar(new PeonMadera());
   agregar( MAT_Rotacion(-45,0,1,0));
   agregar(new PeonBlanco());
@@ -296,23 +362,28 @@ Peones::Peones(){
 
 
 CocaCola::CocaCola(){
+  ponerIdentificador(6);
+  agregar(MAT_Escalado(1.5,1.5,1.5));
   agregar(new TapaArriba());
   agregar(new Cuerpo());
   agregar(new TapaAbajo());
 }
 CocaCola::Cuerpo::Cuerpo(){
+  ponerIdentificador(-1);
   agregar(MAT_Traslacion(Tupla3f{0.0,0.0,0.0}));
   agregar(new MaterialLata());
-  agregar(new MallaRevol("../plys/lata-pcue.ply",10, false,false,true));
+  agregar(new MallaRevol("../plys/lata-pcue.ply",30, false,false,true));
 }
 CocaCola::TapaArriba::TapaArriba () {
+  ponerIdentificador(-1);
   agregar( new MaterialTapasLata() );
-  agregar( new MallaRevol("../plys/lata-psup.ply", 10, true, false, true) );
+  agregar( new MallaRevol("../plys/lata-psup.ply", 30, false, true, true) );
 }
 
 CocaCola::TapaAbajo::TapaAbajo () {
+  ponerIdentificador(-1);
   agregar( new MaterialTapasLata() );
-  agregar( new MallaRevol("../plys/lata-pinf.ply", 10, true, false, true) );
+  agregar( new MallaRevol("../plys/lata-pinf.ply", 30, false, false, true) );
 }
 
 
@@ -642,6 +713,12 @@ Muneco::Muneco()
   parametros.push_back(rotacion_hombro_2);
   parametros.push_back(rotacion_codo_1);
   parametros.push_back(rotacion_codo_2);
+
+  calcularCentroOC();
+
+  cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACentro figura" << leerCentroOC() << endl;
+
+
  }
 
 SegmentoCola::SegmentoCola(){

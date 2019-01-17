@@ -80,7 +80,6 @@ Textura::Textura( const std::string & nombreArchivoJPG )
    // .....
 
   enviada = false;
-  glGenTextures(1, &ident_textura);
   imagen = new jpg::Imagen(nombreArchivoJPG);
   modo_gen_ct = mgct_desactivada;
 
@@ -92,37 +91,23 @@ Textura::Textura( const std::string & nombreArchivoJPG )
 
 void Textura::enviar()
 {
-   // DONE: práctica 4: enviar la imagen de textura a la GPU
-   // .......
+   // DONE: práctica 4: enviar la imagen
 
-  if (modo_gen_ct == mgct_coords_objeto)
-    {
-      cout << "Enviar textura: Modo objeto" << endl;
-      glTexGenfv ( GL_S, GL_OBJECT_PLANE, coefs_s );
-      glTexGenfv ( GL_T, GL_OBJECT_PLANE, coefs_t );
-    }
+  glGenTextures(1, &ident_textura);
+  glBindTexture(GL_TEXTURE_2D, ident_textura);
 
-  if (modo_gen_ct == mgct_coords_ojo)
-    {
-      cout << "Enviar textura: modo ojo" <<endl;
-      glTexGenfv ( GL_S, GL_EYE_PLANE, coefs_s );
-      glTexGenfv ( GL_T, GL_EYE_PLANE, coefs_t );
-    }
-
-  glBindTexture(GL_TEXTURE_2D,ident_textura);
-
-  gluBuild2DMipmaps(
-                    GL_TEXTURE_2D,
-                    GL_RGB,
-                    (GLsizei)imagen->tamX(),
-                    (GLsizei)imagen->tamY(),
-                    GL_RGB,
-                    GL_UNSIGNED_BYTE,
-                    imagen->leerPixels()
-                    );
+  gluBuild2DMipmaps
+    (
+     GL_TEXTURE_2D,
+     GL_RGB,
+     imagen->tamX(),
+     imagen->tamY(),
+     GL_RGB,
+     GL_UNSIGNED_BYTE,
+     imagen->leerPixels()
+     );
 
   enviada = true;
-
 }
 
 //----------------------------------------------------------------------
@@ -139,19 +124,19 @@ Textura::~Textura( )
 }
 
 //----------------------------------------------------------------------
-// por ahora, se asume la unidad de texturas #0
 void Textura::activar(  )
 {
    // DONE: práctica 4: enviar la textura a la GPU (solo la primera vez) y activarla
    // .......
-
-  if (!enviada) enviar();
+  glEnable(GL_TEXTURE_2D);
+  if (!enviada)
+    enviar();
+  else
+    glBindTexture(GL_TEXTURE_2D, ident_textura);
 
   // Aprobechamos la correspondencia entre enum y entero, de forma que TEXTURE_MODE[modo_gen_ct] nos da el tipo.
   const GLint TEXTURE_MODE[] = { GL_OBJECT_LINEAR, GL_EYE_LINEAR };
   const GLenum TEXTURE_RELATIVE[] = { GL_OBJECT_PLANE, GL_EYE_PLANE };
-
-  glEnable( GL_TEXTURE_2D );
 
   if (modo_gen_ct != mgct_desactivada)
     {
@@ -170,12 +155,19 @@ void Textura::activar(  )
       glDisable( GL_TEXTURE_GEN_T );
     }
 
-
-
-  glBindTexture(GL_TEXTURE_2D,ident_textura);
-
 }
-// *********************************************************************
+
+TexturaXY::TexturaXY( const std::string & nom )
+  : Textura(nom)
+{
+  modo_gen_ct = mgct_coords_ojo;  // por ejemplo
+
+  coefs_s[0] = 1.0;
+  coefs_s[1] = coefs_s[2] = coefs_s[3] = 0.0;
+
+  coefs_t[1] = 1.0;
+  coefs_t[0] = coefs_t[2] = coefs_t[3] = 0.0;
+}
 
 Material::Material()
 {
@@ -201,7 +193,10 @@ Material::Material( const std::string & nombreArchivoJPG )
    tra.ambiente  = VectorRGB( 0.0, 0.0, 0.0, 1.0);
    tra.difusa    = VectorRGB( 0.2, 0.2, 0.2, 1.0 );
    tra.especular = VectorRGB( 0.2, 0.2, 0.2, 1.0 );
+   del.exp_brillo = 1.0;
+   tra.exp_brillo = 1.0;
 
+   ponerNombre("material con textura e iluminación por defecto");
 }
 
 // ---------------------------------------------------------------------
@@ -217,7 +212,10 @@ Material::Material( Textura * text, float ka, float kd, float ks, float exp )
   iluminacion = true;
   ponerNombre("Material con textura e iluminación") ;
   tex = text;
-  coloresCero();
+
+  color =
+    del.emision =
+    tra.emision = {0.0, 0.0, 0.0, 1.0};
 
   del.ambiente    =
     tra.ambiente  = VectorRGB ( ka, ka, ka, 1.0);
@@ -243,20 +241,20 @@ Material::Material( const Tupla3f & colorAmbDif, float ka, float kd, float ks, f
    tex = NULL;
   iluminacion = true;
 
-  color = {colorAmbDif[0], colorAmbDif[1], colorAmbDif[2], 1.0};
+  del.emision =
+    tra.emision = {0.0, 0.0, 0.0, 1.0};
 
-  del.emision   = VectorRGB(0.0,0.0,0.0, 1.0);
-  del.ambiente  = ka*color;
-  del.difusa    = kd*color;
-  del.especular = ks*color;
+  del.ambiente =
+    tra.ambiente = VectorRGB(ka * colorAmbDif(R), ka * colorAmbDif(G), ka * colorAmbDif(B), 1.0);
 
-  tra.emision   = VectorRGB(0.0,0.0,0.0, 1.0);
-  tra.ambiente  = ka*color;
-  tra.difusa    = kd*color;
-  tra.especular = ks*color;
+  del.difusa =
+    tra.difusa = VectorRGB(kd * colorAmbDif(R), kd * colorAmbDif(G), kd * colorAmbDif(B), 1.0);
 
-  del.exp_brillo = exp;
-  tra.exp_brillo = exp;
+  del.especular =
+    tra.especular = {ks, ks, ks, 1.0};
+
+  del.exp_brillo =
+    tra.exp_brillo = exp;
 
   ponerNombre("material INCREIBLE");
 
@@ -269,7 +267,6 @@ Material::Material( const float r, const float g, const float b )
    // .....
 
   ponerNombre("Material color plano.");
-  coloresCero();
   color = {r, g, b, 1.0};
   iluminacion = false;
   tex = nullptr;
@@ -324,8 +321,17 @@ void Material::activar(  )
 {
    // TODO: práctica 4: activar un material
    // .....
+
+
+  if (tex == nullptr)
+    glDisable( GL_TEXTURE_2D );
+  else
+    tex->activar();
+
+
   if(iluminacion)
     {
+      glEnable(GL_LIGHTING);
     //Nótese que en nuestro caso, del=tra siempre pero como lo tenemos separado
     //en dos partes, aquí también lo haremos por si pide separarlo en el examen.
     glMaterialfv(GL_FRONT,GL_EMISSION,del.emision);
@@ -340,22 +346,14 @@ void Material::activar(  )
     glMaterialfv(GL_BACK,GL_SPECULAR,tra.especular);
     glMaterialf(GL_BACK,GL_SHININESS,tra.exp_brillo);
 
-    glEnable(GL_LIGHTING);
-
+    glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
   }
   else
     {
     glDisable(GL_LIGHTING);
     glColor4fv(color);
-    glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
-    glColorMaterial(GL_FRONT_AND_BACK,GL_EMISSION);
-    glColorMaterial(GL_FRONT_AND_BACK,GL_SPECULAR);
     }
 
-  if (tex == nullptr)
-    glDisable( GL_TEXTURE_2D );
-  else
-    tex->activar();
 
 }
 
@@ -514,30 +512,17 @@ void ColFuentesLuz::insertar( FuenteLuz * pf )  // inserta una nueva
 
 void ColFuentesLuz::activar( )
 {
-   // TODO: práctica 4: activar una colección de fuentes de luz
-   // .....
-
-
-    for(unsigned i=0; i<vpf.size();i++){
-      vpf[i]->activar();
-    }
-    for(unsigned i=vpf.size(); i<max_num_fuentes;i++){
-      glDisable(GL_LIGHT0+i);
-    }
-
-}
-
-void ColFuentesLuz::desactivar( )
-{
-  // TODO: práctica 4: activar una colección de fuentes de luz
-  // .....
+  glEnable(GL_LIGHTING);
 
   for(unsigned i=0; i<vpf.size();i++){
+    vpf[i]->activar();
+  }
+
+  for(unsigned i=vpf.size(); i<max_num_fuentes;i++){
     glDisable(GL_LIGHT0+i);
   }
 
 }
-
 
 
 //----------------------------------------------------------------------
@@ -567,19 +552,56 @@ ColFuentesLuz::~ColFuentesLuz()
 
 
 MaterialLata::MaterialLata()
-  : Material(new Textura("../imgs/lata-coke.jpg"),0.0,1.0,1.0,1.0){
-}
+  : Material(
+             new Textura("../imgs/lata-coke.jpg"),
+             .0,
+             .95,
+             .05,
+             1)
+{}
+
 MaterialTapasLata::MaterialTapasLata()
-  : Material(NULL,0.0,0.2,0.2,1){
-}
+  : Material(
+             nullptr,
+             0.0,
+             0.5,
+             0.5,
+             2)
+{}
 
 MaterialPeonMadera::MaterialPeonMadera()
-  : Material(new Textura("../imgs/text-madera.jpg"),0.0,1,1,1){
-}
+  : Material(
+             new TexturaXY("../imgs/text-madera.jpg"),
+             0.0,
+             1.0,
+             .0,
+             5.0)
+{}
 
 MaterialPeonBlanco::MaterialPeonBlanco()
-  : Material({1.0, 1.0, 1.0},0.0,0,1,0){
-}
+  : Material(
+             {1.0, 1.0, 1.0},
+             0.0,
+             1.0,
+             0.0,
+             1.0
+             )
+{}
 MaterialPeonNegro::MaterialPeonNegro()
-  : Material({0.2, 0.2, 0.2},0,0,2,5) {
+  : Material(
+             {0.01,0.01,0.01},
+             0.0,
+             .9,
+             .1,
+             1.5
+             )
+{}
+
+ColeccionFuenteP4::ColeccionFuenteP4()
+{
+  const VectorRGB color1 = {1.0, 1.0, 1.0, 5.0};
+  const VectorRGB color2 = {0.4, 0.4, 0.4, 1.0};
+
+  insertar(new FuenteLuzDireccional(-10.0, 30.0, color1));
+  insertar(new FuenteLuzPosicional({0.0, 20.0, 0.0}, color2));
 }

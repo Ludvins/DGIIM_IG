@@ -26,11 +26,9 @@ static unsigned objetoActivo4 = 0;
 static constexpr int numObjetos4 = 2;
 static NodoGrafoEscena* objetos4[numObjetos4] = {nullptr, nullptr};
 
-ColFuentesLuz p4_fuentes;
-int p4_angulo_actual = 0;
-int p4_fuente_activa = 0;
-bool p4_focos_activos = true;
-
+ColeccionFuenteP4 p4_fuentes;
+unsigned p4_angulo_actual = 0;
+unsigned p4_fuente_activa = 0;
 
 
 // ---------------------------------------------------------------------
@@ -42,10 +40,6 @@ void P4_Inicializar(  )
 {
 
    cout << "Creando objetos de la práctica 4 .... " << flush ;
-
-   p4_fuentes.insertar(new FuenteLuzDireccional(-10,30,Tupla4f{0.5,0.5,0.5,1.0}));
-   p4_fuentes.insertar( new FuenteLuzPosicional( {10,10,10}, {0.1,0.1,0.1,0} ) );
-   p4_fuentes.activar();
    objetos4[0] = new EscenaP4();
 
    cout << "hecho." << endl << flush ;
@@ -86,27 +80,14 @@ bool P4_FGE_PulsarTeclaCaracter( unsigned char tecla )
      res = true;
      break;
 
-   case 'L' :
 
-     p4_focos_activos = !p4_focos_activos;
-
-     if (p4_focos_activos) {
-       cout << "Focos activados" << endl;
-       p4_fuentes.activar();
-     }
-     else {
-       cout << "Focos desactivados" << endl;
-       p4_fuentes.desactivar();
-     }
-     res = true;
-     break;
    case 'G' :
      // DONE práctica 4: activar el siguiente ángulo (longitud o latitud)
      // ....
      // Conmutamos entre alpha y beta
 
      p4_angulo_actual = (p4_angulo_actual + 1) %2;
-     std::cout << "Ángulo actual: beta";
+     std::cout << "Ángulo actual:";
      p4_angulo_actual==0
        ? cout << " beta " << endl
        : cout << " alpha " << endl;
@@ -154,7 +135,9 @@ void P4_DibujarObjetos( ContextoVis & cv )
    //     (requiere activar las fuentes de luz y luego dibujar el grafo de escena)
    // ....
 
-  objetos4[objetoActivo4]->visualizarGL(cv);
+  p4_fuentes.activar();
+  if (objetos4[objetoActivo4] != nullptr)
+    objetos4[objetoActivo4]->visualizarGL(cv);
 
 }
 

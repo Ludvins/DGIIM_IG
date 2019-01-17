@@ -44,7 +44,7 @@ class PilaMateriales
    private:
 
    Material *              actual ;
-   std::vector<Material *> pila ;
+  std::vector<Material* >  pila ;
 
    public:
 
@@ -274,15 +274,19 @@ class ColFuentesLuz
    ~ColFuentesLuz() ;
    void insertar( FuenteLuz * pf ) ; // inserta una nueva
    void activar(); // activa las fuentes de luz
-  void desactivar (); // Desactiva las fuentes de luz
    FuenteLuz * ptrFuente( unsigned i ); // devuelve ptr a la fuente de luz numero i
   int size() {return vpf.size();}
 
    private:
-   std::vector<FuenteLuz *> vpf ; // vector de punteros a fuentes
+  std::vector<FuenteLuz*> vpf ; // vector de punteros a fuentes
    GLint max_num_fuentes ;
 } ;
 
+class ColeccionFuenteP4 : public ColFuentesLuz
+{
+public:
+  ColeccionFuenteP4();
+};
 
 // ***********************************************************************
 // Clase MaterialLata
@@ -312,6 +316,3 @@ public:
 };
 
 #endif
-
-
-

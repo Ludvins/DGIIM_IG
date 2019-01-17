@@ -8,12 +8,37 @@
 #include <aux.hpp>
 #include <tuplasg.hpp>
 #include "MallaInd.hpp"   // declaración de 'ContextoVis'
-
+#include <vector>
 
 #define MODO_INMEDIATO 0
 
 // *****************************************************************************
 // funciones auxiliares
+
+
+Tupla3f calcularCentroDeCajaEnglobante(std::vector<Tupla3f> vertices)
+{
+
+  assert(!vertices.empty());
+
+  Tupla3f maximos = vertices[0],
+    minimos = vertices[0];
+
+  for( auto ver : vertices){
+
+    maximos[0] = std::max(ver[0], maximos[0]);
+    maximos[1] = std::max(ver[1], maximos[1]);
+    maximos[2] = std::max(ver[2], maximos[2]);
+
+    minimos[0] = std::min(ver[0], minimos[0]);
+    minimos[1] = std::min(ver[1], minimos[1]);
+    minimos[2] = std::min(ver[2], minimos[2]);
+
+  }
+
+ return (maximos + minimos)/2.0;
+
+}
 
 
 // *****************************************************************************
@@ -56,8 +81,6 @@ void MallaInd::calcular_normales()
     Tupla3f base_2 = vertice_3 - vertice_1;
 
     Tupla3f normal = base_1.cross(base_2).normalized();
-
-    //std::cout << normal[0] << normal[1] << normal[2] << std::endl;
 
     nor_caras.push_back(normal);
 
@@ -153,7 +176,7 @@ void MallaInd::visualizarDE_MI( ContextoVis & cv )
 
 #if MODO_INMEDIATO
     glBegin (GL_TRIANGLES);
-    for (auto cara : caras) 
+    for (auto cara : caras)
       for ( int j = 0; j < 3; j++)
         {
           if (!col_ver.empty())
@@ -172,8 +195,10 @@ void MallaInd::visualizarDE_MI( ContextoVis & cv )
   glVertexPointer( 3, GL_FLOAT, 0, vertices.data());
 
   // Especificar y habilitar puntero a colores
-  glColorPointer(3, GL_FLOAT, 0, col_ver.data());
-  glEnableClientState (GL_COLOR_ARRAY);
+  if (!col_ver.empty() && !cv.modoSeleccionFBO){
+    glColorPointer(3, GL_FLOAT, 0, col_ver.data());
+    glEnableClientState (GL_COLOR_ARRAY);
+  }
 
   // Dibujar usando vértices indexados. Parámetros.
   // - Tipo de primitiva
@@ -245,7 +270,7 @@ void MallaInd::visualizarDE_VBOs( ContextoVis & cv )
   if (!vbo_creado)
     crearVBOs();
 
-  if (!col_ver.empty())
+  if (!col_ver.empty() and !cv.modoSeleccionFBO )
     {
       glBindBuffer (GL_ARRAY_BUFFER, id_vbo_col_ver);
       glColorPointer ( 3, GL_FLOAT, 0, 0);
@@ -286,10 +311,18 @@ void MallaInd::visualizarGL( ContextoVis & cv )
   num_ver = vertices.size();
   num_caras = caras.size();
 
+  if (cv.modoSeleccionFBO)
+    {
+    glShadeModel(GL_FLAT);
+    glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+    cv.usarVBOs ? visualizarDE_VBOs(cv) : visualizarDE_MI(cv);
+    return;
+    }
+
   switch(cv.modoVis){
   case modoSolido:
-    glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
     glShadeModel(GL_SMOOTH);
+    glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
     cv.usarVBOs ? visualizarDE_VBOs(cv) : visualizarDE_MI(cv);
     break;
 
@@ -317,19 +350,24 @@ void MallaInd::visualizarGL( ContextoVis & cv )
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
     cv.usarVBOs ? visualizarDE_VBOs(cv) : visualizarDE_MI(cv);
     break;
+  }
 }
 
+  void MallaInd::calcularCentroOC(){
 
+    if(!centro_calculado)
+      ponerCentroOC(calcularCentroDeCajaEnglobante(vertices));
 
 }
 // *****************************************************************************
+
 
 // *****************************************************************************
 
 Cubo::Cubo()
 :  MallaInd( "Malla Cubo" )
 {
-  
+
 
   float origenx = 0.0,
     origeny = 0.0,
@@ -359,6 +397,8 @@ Cubo::Cubo()
   num_ver = vertices.size();
   num_caras = caras.size();
   setColorVertices();
+  calcularCentroOC();
+  std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" <<  leerCentroOC() << std::endl;
 }
 
 
@@ -390,6 +430,3 @@ Tetraedro::Tetraedro( )
   setColorVertices();
 }
 // *****************************************************************************
-
-
-

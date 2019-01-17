@@ -19,9 +19,11 @@ class Objeto3D
    private:
       std::string  nombre_obj ;    // nombre asignado al objeto
       Tupla3f      centro_oc ;     // punto central o representativo del objeto, en coordenadas de objeto
-      int          identificador ; // identificador de este objeto
-                                   // 0: no tiene identificador, -1: identificador del padre,
-                                   // >0: tiene este identificador
+protected:
+  bool centro_calculado = false;
+  int          identificador ; // identificador de este objeto
+  // 0: no tiene identificador, -1: identificador del padre,
+  // >0: tiene este identificador
 
    public:
       // pone el identificador a '0', siempre
