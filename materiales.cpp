@@ -513,6 +513,7 @@ void ColFuentesLuz::insertar( FuenteLuz * pf )  // inserta una nueva
 void ColFuentesLuz::activar( )
 {
   glEnable(GL_LIGHTING);
+  glEnable(GL_NORMALIZE);
 
   for(unsigned i=0; i<vpf.size();i++){
     vpf[i]->activar();
@@ -555,18 +556,19 @@ MaterialLata::MaterialLata()
   : Material(
              new Textura("../imgs/lata-coke.jpg"),
              0.0,
-             5,
-             1.2,
-             2)
+             0.6,
+             0.4,
+             7
+             )
 {}
 
 MaterialTapasLata::MaterialTapasLata()
   : Material(
              nullptr,
              0.0,
-             0.5,
-             0.8,
-             2)
+             0.6,
+             0.4,
+             40)
 {}
 
 MaterialPeonMadera::MaterialPeonMadera()
@@ -575,7 +577,7 @@ MaterialPeonMadera::MaterialPeonMadera()
              0.0,
              .6,
              .4,
-             10
+             8
              )
 {}
 
@@ -594,7 +596,7 @@ MaterialPeonNegro::MaterialPeonNegro()
              0.0,
              .9,
              .1,
-             10
+             8
              )
 {}
 
