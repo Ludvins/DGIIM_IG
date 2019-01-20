@@ -332,26 +332,26 @@ void Material::activar(  )
   if(iluminacion)
     {
       glEnable(GL_LIGHTING);
-    //Nótese que en nuestro caso, del=tra siempre pero como lo tenemos separado
-    //en dos partes, aquí también lo haremos por si pide separarlo en el examen.
-    glMaterialfv(GL_FRONT,GL_EMISSION,del.emision);
-    glMaterialfv(GL_FRONT,GL_AMBIENT,del.ambiente);
-    glMaterialfv(GL_FRONT,GL_DIFFUSE,del.difusa);
-    glMaterialfv(GL_FRONT,GL_SPECULAR,del.especular);
-    glMaterialf(GL_FRONT,GL_SHININESS,del.exp_brillo);
+      //Nótese que en nuestro caso, del=tra siempre pero como lo tenemos separado
+      //en dos partes, aquí también lo haremos por si pide separarlo en el examen.
+      glMaterialfv(GL_FRONT,GL_EMISSION,del.emision);
+      glMaterialfv(GL_FRONT,GL_AMBIENT,del.ambiente);
+      glMaterialfv(GL_FRONT,GL_DIFFUSE,del.difusa);
+      glMaterialfv(GL_FRONT,GL_SPECULAR,del.especular);
+      glMaterialf(GL_FRONT,GL_SHININESS,del.exp_brillo);
 
-    glMaterialfv(GL_BACK,GL_EMISSION,tra.emision);
-    glMaterialfv(GL_BACK,GL_AMBIENT,tra.ambiente);
-    glMaterialfv(GL_BACK,GL_DIFFUSE,tra.difusa);
-    glMaterialfv(GL_BACK,GL_SPECULAR,tra.especular);
-    glMaterialf(GL_BACK,GL_SHININESS,tra.exp_brillo);
+      glMaterialfv(GL_BACK,GL_EMISSION,tra.emision);
+      glMaterialfv(GL_BACK,GL_AMBIENT,tra.ambiente);
+      glMaterialfv(GL_BACK,GL_DIFFUSE,tra.difusa);
+      glMaterialfv(GL_BACK,GL_SPECULAR,tra.especular);
+      glMaterialf(GL_BACK,GL_SHININESS,tra.exp_brillo);
 
-    glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
-  }
+      glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
+    }
   else
     {
-    glDisable(GL_LIGHTING);
-    glColor4fv(color);
+      glDisable(GL_LIGHTING);
+      glColor4fv(color);
     }
 
 
@@ -554,10 +554,10 @@ ColFuentesLuz::~ColFuentesLuz()
 MaterialLata::MaterialLata()
   : Material(
              new Textura("../imgs/lata-coke.jpg"),
-             .0,
-             .95,
-             .05,
-             1)
+             0.0,
+             5,
+             1.2,
+             2)
 {}
 
 MaterialTapasLata::MaterialTapasLata()
@@ -565,7 +565,7 @@ MaterialTapasLata::MaterialTapasLata()
              nullptr,
              0.0,
              0.5,
-             0.5,
+             0.8,
              2)
 {}
 
@@ -573,9 +573,10 @@ MaterialPeonMadera::MaterialPeonMadera()
   : Material(
              new TexturaXY("../imgs/text-madera.jpg"),
              0.0,
-             1.0,
-             .0,
-             5.0)
+             .6,
+             .4,
+             10
+             )
 {}
 
 MaterialPeonBlanco::MaterialPeonBlanco()
@@ -593,7 +594,7 @@ MaterialPeonNegro::MaterialPeonNegro()
              0.0,
              .9,
              .1,
-             1.5
+             10
              )
 {}
 
