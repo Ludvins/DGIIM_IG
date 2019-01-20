@@ -92,5 +92,10 @@ class Tetraedro : public MallaInd
       Tetraedro();
 };
 
+class Disco : public MallaInd
+{
+public:
+  Disco(int num_perfiles);
+};
 
 #endif

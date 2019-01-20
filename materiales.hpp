@@ -273,8 +273,10 @@ class ColFuentesLuz
    ColFuentesLuz() ; // crea la colección vacía
    ~ColFuentesLuz() ;
    void insertar( FuenteLuz * pf ) ; // inserta una nueva
+  void activar(unsigned i);
+  void desactivar(unsigned i);
    void activar(); // activa las fuentes de luz
-   FuenteLuz * ptrFuente( unsigned i ); // devuelve ptr a la fuente de luz numero i
+   FuenteLuz* ptrFuente( unsigned i ); // devuelve ptr a la fuente de luz numero i
   int size() {return vpf.size();}
 
    private:
@@ -313,6 +315,46 @@ public:
 class MaterialPeonNegro : public Material{
 public:
   MaterialPeonNegro();
+};
+
+class MaterialMarfil : public Material{
+public:
+  MaterialMarfil();
+};
+class MaterialEsmeralda : public Material {
+public:
+  MaterialEsmeralda();
+};
+
+class MaterialCambiante : public Material {
+public:
+  MaterialCambiante(Tupla3f color1, Tupla3f color2, float ka1, float ka2, float kd1, float kd2, float ks1, float ks2, float exp1, float exp2);
+  void cambiar();
+private:
+  ColoresMat c1, c2;
+  float i = 0.0;
+  bool aumentando = true;
+
+};
+
+class MaterialCaraMoneda : public Material {
+ public:
+  MaterialCaraMoneda();
+};
+
+class MaterialBordeMoneda : public Material {
+public:
+  MaterialBordeMoneda();
+};
+
+class MaterialCuboColores : public Material {
+public:
+  MaterialCuboColores();
+};
+
+class MaterialTest : public Material {
+public:
+  MaterialTest();
 };
 
 #endif

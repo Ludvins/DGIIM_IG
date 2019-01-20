@@ -7,6 +7,7 @@
 
 #include <aux.hpp>
 #include <tuplasg.hpp>
+#include "matrices-tr.hpp"
 #include "MallaInd.hpp"   // declaración de 'ContextoVis'
 #include <vector>
 
@@ -62,7 +63,7 @@ MallaInd::MallaInd( const std::string & nombreIni )
 // calcula las dos tablas de normales
 void MallaInd::calcular_normales()
 {
-   // TODO: en la práctica 2: calculo de las normales de la malla
+   // DONE: en la práctica 2: calculo de las normales de la malla
    // .......
 
   std::cout << "Calcular normales:" << std::endl;
@@ -71,24 +72,29 @@ void MallaInd::calcular_normales()
 
   nor_vertices=std::vector<Tupla3f>(vertices.size(),Tupla3f{0.0,0.0,0.0});
 
-  for( auto cara : caras ){
+  for( int i = 0 ; i < caras.size() ; i++ ){
 
-    Tupla3f vertice_1 = vertices[cara[0]],
-      vertice_2 = vertices[cara[1]],
-      vertice_3 = vertices[cara[2]];
+    Tupla3f vertice_1 = vertices[caras[i][0]],
+      vertice_2 = vertices[caras[i][1]],
+      vertice_3 = vertices[caras[i][2]];
 
     Tupla3f base_1 = vertice_2 - vertice_1;
     Tupla3f base_2 = vertice_3 - vertice_1;
 
     Tupla3f normal = base_1.cross(base_2).normalized();
 
-    nor_caras.push_back(normal);
 
     for( int j = 0 ; j < 3; j++){
-      nor_vertices[cara[j]] = (nor_vertices[cara[j]] + normal).normalized();
+      nor_vertices[caras[i][j]] = nor_vertices[caras[i][j]] + normal;
     }
 
+    nor_caras.push_back(normal.normalized());
+
   }
+
+  for ( int i = 0; i < nor_vertices.size(); i++)
+    nor_vertices[i] = nor_vertices[i].normalized();
+
 
 }
 
@@ -171,8 +177,6 @@ void MallaInd::visualizarDE_MI( ContextoVis & cv )
 {
    // DONE: en la práctica 1: visualizar en modo inmediato (glDrawElements)
    // ...........
-
-
 
 #if MODO_INMEDIATO
     glBegin (GL_TRIANGLES);
@@ -398,7 +402,13 @@ Cubo::Cubo()
   num_caras = caras.size();
   setColorVertices();
   calcularCentroOC();
-  std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" <<  leerCentroOC() << std::endl;
+  calcular_normales();
+  texturas={
+            {0.0, 0.0},
+            {0.5, 0.0},
+            {0.5, 0.5},
+            {0.0, 0.5}
+  };
 }
 
 
@@ -428,5 +438,28 @@ Tetraedro::Tetraedro( )
   num_ver = vertices.size();
   num_caras = caras.size();
   setColorVertices();
+}
+
+Disco::Disco(int num_perfiles)
+  : MallaInd ("Disco")
+{
+  Tupla3f v = {1.0, 0.0, 0.0};
+  Matriz4f m = MAT_Rotacion(360/num_perfiles, 0, 1, 0);
+
+  vertices.push_back({0.0, 0.0, 0.0});
+  vertices.push_back(v);
+  for(int i = 1; i < num_perfiles; i++)
+    {
+      v = m*v;
+      vertices.push_back(v);
+      caras.push_back({0, i, i+1});
+    }
+  caras.push_back({1, 0, num_perfiles});
+
+  for(auto vertice : vertices)
+    {
+      texturas.push_back({(vertice[0]+1.0)/2, (vertice[2]+1.0)/2});
+      nor_vertices.push_back({0.0, 1.0, 0.0});
+    }
 }
 // *****************************************************************************

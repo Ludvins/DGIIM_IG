@@ -129,6 +129,10 @@ class NodoGrafoEscenaParam : public NodoGrafoEscena
       void siguienteCuadro();
 } ;
 
+class Test : public NodoGrafoEscenaParam{
+public:
+  Test(MaterialCambiante* m);
+};
 
 class Peones : public NodoGrafoEscenaParam{
 protected:
@@ -233,6 +237,30 @@ public:
 
 };
 
+class CaraMoneda : public NodoGrafoEscena{
+public:
+  CaraMoneda();
+};
+
+class BordeMoneda : public NodoGrafoEscena{
+ public:
+  BordeMoneda();
+};
+
+class Moneda : public NodoGrafoEscena{
+public:
+  Moneda();
+};
+
+class CuboColores: public NodoGrafoEscena{
+public:
+  CuboColores();
+};
+
+class EsferaTest : public NodoGrafoEscena{
+public:
+  EsferaTest();
+};
 #endif // GRAFO_ESCENA_HPP
 
 // *********************************************************************

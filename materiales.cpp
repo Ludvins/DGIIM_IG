@@ -510,6 +510,26 @@ void ColFuentesLuz::insertar( FuenteLuz * pf )  // inserta una nueva
 //----------------------------------------------------------------------
 // activa una colección de fuentes de luz
 
+void ColFuentesLuz::activar(unsigned i)
+{
+  glEnable(GL_LIGHTING);
+  glEnable(GL_NORMALIZE);
+
+  if (i < vpf.size())
+    vpf[i]->activar();
+
+}
+
+void ColFuentesLuz::desactivar(unsigned i)
+{
+  glEnable(GL_LIGHTING);
+  glEnable(GL_NORMALIZE);
+
+  if (i < vpf.size())
+    glDisable(GL_LIGHT0+i);
+
+}
+
 void ColFuentesLuz::activar( )
 {
   glEnable(GL_LIGHTING);
@@ -600,11 +620,130 @@ MaterialPeonNegro::MaterialPeonNegro()
              )
 {}
 
+MaterialMarfil::MaterialMarfil()
+  : Material(
+             {1.0,1.0,1.0},
+             0.0,
+             1.0,
+             0.0,
+             1.0
+)
+{}
+
+MaterialCuboColores::MaterialCuboColores()
+  : Material (new Textura("../imgs/colores-cubo.jpg"),
+              0.0,
+              .6,
+              .4,
+              8
+              )
+
+{
+}
+
+MaterialEsmeralda::MaterialEsmeralda()
+  : Material(
+             {0.314, 0.784, 0.471},
+             0.0,
+             0.6,
+             0.4,
+             10
+             )
+{
+}
+
+MaterialBordeMoneda::MaterialBordeMoneda()
+  : Material(
+             {0.72, 0.45, 0.20},
+             0.0,
+             0.6,
+             0.4,
+             10
+             )
+{
+
+}
+
+
+MaterialCaraMoneda::MaterialCaraMoneda()
+  : Material(
+             new Textura("../imgs/moneda.jpg"),
+              0.0,
+              0.9,
+              0.1,
+              50
+             )
+{
+}
+
+MaterialTest::MaterialTest()
+  : Material({1.0, 0.0, 0.0},
+             1.0,
+             0.0,
+             0.0,
+             1)
+    {}
+
+MaterialCambiante::MaterialCambiante(Tupla3f color1, Tupla3f color2, float ka1, float ka2, float kd1, float kd2, float ks1, float ks2, float exp1, float exp2)
+  :Material(
+            color1,
+            ka1,
+            kd1,
+            ks1,
+            exp1
+            )
+{
+    c1.emision = {0.0, 0.0, 0.0, 1.0};
+    c1.ambiente = VectorRGB(ka1 * color1(R), ka1 * color1(G), ka1 * color1(B), 1.0);
+    c1.difusa = VectorRGB(kd1 * color1(R), kd1 * color1(G), kd1 * color1(B), 1.0);
+    c1.especular = VectorRGB(ks1, ks1, kd1, 1.0);
+    c1.exp_brillo = exp1;
+
+    c2.emision = {0.0, 0.0, 0.0, 1.0};
+    c2.ambiente = VectorRGB(ka2 * color2(R), ka2 * color2(G), ka2 * color2(B), 1.0);
+    c2.difusa = VectorRGB(kd2 * color2(R), kd2 * color2(G), kd2 * color2(B), 1.0);
+    c2.especular = VectorRGB(ks2 ,ks2 ,kd2, 1.0);
+    c2.exp_brillo = exp2;
+}
+
+void MaterialCambiante::cambiar()
+{
+
+  if (aumentando)
+    i+=0.05;
+  else
+    i-=0.05;
+
+  if (i >= 1.0) aumentando = false;
+  if (i <= 0.0) aumentando = true;
+
+  del.ambiente = tra.ambiente = VectorRGB(i*c2.ambiente(R) + (1.0-i)*c1.ambiente(R),
+                                          i*c2.ambiente(G) + (1.0-i)*c1.ambiente(G),
+                                          i*c2.ambiente(B) + (1.0-i)*c1.ambiente(B), 1.0);
+  del.difusa = tra.difusa = VectorRGB(i*c2.difusa(R) + (1.0-i)*c1.difusa(R),
+                                          i*c2.difusa(G) + (1.0-i)*c1.difusa(G),
+                                          i*c2.difusa(B) + (1.0-i)*c1.difusa(B), 1.0);
+  del.especular = tra.especular = VectorRGB(i*c2.especular(R) + (1.0-i)*c1.especular(R),
+                                          i*c2.especular(G) + (1.0-i)*c1.especular(G),
+                                          i*c2.especular(B) + (1.0-i)*c1.especular(B), 1.0);
+
+  del.exp_brillo = tra.exp_brillo = i*c2.exp_brillo + (1-i)*c1.exp_brillo;
+}
+
+
 ColeccionFuenteP4::ColeccionFuenteP4()
 {
   const VectorRGB color1 = {1.0, 1.0, 1.0, 5.0};
   const VectorRGB color2 = {0.4, 0.4, 0.4, 1.0};
+  const VectorRGB amarillo_rojizo = {1.0, (float) 100/255, 0.0, 1.0};
+  const VectorRGB verde = {0.0,1.0, .0, 1.0};
+  const VectorRGB amarillo = {1.0, 1.0, 0.0, 1.0};
+
 
   insertar(new FuenteLuzDireccional(-10.0, 30.0, color1));
   insertar(new FuenteLuzPosicional({0.0, 20.0, 0.0}, color2));
+  //insertar(new FuenteLuzDireccional(180+45, -45, amarillo));
+  //insertar(new FuenteLuzPosicional({10, -10, 10}, verde));
 }
+
+

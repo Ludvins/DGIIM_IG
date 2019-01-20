@@ -107,16 +107,18 @@ void MallaRevol::crearMallaRevol( const std::vector<Tupla3f>&  perfil_original,
    for ( int i = 0; i < nperfiles - 1; i++)
      for ( unsigned j = 0; j < nvp-1; j++)
        {
-         caras.push_back({ (i+1)*nvp+j+1 ,  i*nvp + j,(i+1)*nvp+j}); // Cara: [i][j]-[i+1][j+1]-[i+1][j]
+
          caras.push_back({i*nvp + j+1,  i*nvp + j, (i+1)*nvp + j+1}); // Cara: [i][j]-[i+1][j+1]-[i][j+1]
+         caras.push_back({ (i+1)*nvp+j+1 ,  i*nvp + j,(i+1)*nvp+j}); // Cara: [i][j]-[i+1][j+1]-[i+1][j]
        }
 
    // Si se ha querido cerrar la malla, es necesario crear las ultimas caras.
    if (cerrar_malla){
      for (unsigned j = 0; j < nvp-1; j++)
        {
-         caras.push_back({  j+1, (nperfiles - 1)*nvp + j,j}); // Cara: [0][j]-[0][j+1]-[-1][j]
+
          caras.push_back ({  (nperfiles - 1)*nvp + j+1, (nperfiles - 1)*nvp + j,j+1}); // Cara: [0][j+1]-[-1][j+1]-[-1][j]
+         caras.push_back({  j+1, (nperfiles - 1)*nvp + j,j}); // Cara: [0][j]-[0][j+1]-[-1][j]
        }
    }
 
@@ -159,12 +161,13 @@ Cilindro::Cilindro ( const int num_verts_per, //Numero de vertices del perfil or
   cout << "Creando cilindro con " << num_verts_per << " " << nperfiles << endl;
   vector<Tupla3f> perfil;
 
-  for ( unsigned i = 0; i < num_verts_per; i++){
-    perfil.push_back( {1.0, 0.0 + (i+1)/num_verts_per, 0.0});
+  for ( float i = 0.0; i <= num_verts_per; i++){
+    perfil.push_back( {1.0, 0.0 + (float)(i)/num_verts_per, 0.0});
   }
 
   crearMallaRevol(perfil, nperfiles, crear_tapas, cerrar_malla, crear_texturas);
 
+  calcular_normales();
 }
 
 CustomCilindro::CustomCilindro ( const int num_verts_per, //Numero de vertices del perfil original
@@ -221,13 +224,15 @@ Esfera::Esfera( const int num_verts_per,
   cout << "Creando cono con " << num_verts_per << " " << nperfiles << endl;
   vector<Tupla3f> perfil;
 
-  for ( float i = 0.0; i <= num_verts_per; i+=1.0){
+  for ( float i = 1.0; i < num_verts_per; i+=1.0){
     float y = -1*1.0 + 2*i/num_verts_per;
     perfil.push_back( {0.0 + sqrt(1 - (y*y)), y, 0.0});
   }
 
   crearMallaRevol(perfil, nperfiles, crear_tapas, cerrar_malla, crear_texturas);
 
+  calcular_normales();
+  calcularCentroOC();
 }
 
 

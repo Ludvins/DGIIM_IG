@@ -325,6 +325,18 @@ void NodoGrafoEscenaParam::siguienteCuadro()
 
 // -----------------------------------------------------------------------------
 
+Test::Test(MaterialCambiante* m){
+  ponerNombre("Test");
+  agregar(m);
+  agregar(new Esfera(20, 20, true, true, true));
+}
+
+CuboColores::CuboColores(){
+  agregar(new MaterialCuboColores());
+  agregar(new Cubo());
+}
+
+
 EscenaP4::EscenaP4(){
   ponerNombre( "Clase práctica 4" );
   ponerIdentificador(0);
@@ -335,20 +347,27 @@ EscenaP4::EscenaP4(){
 Peones::PeonMadera::PeonMadera(){
   ponerIdentificador(2);
   agregar(MAT_Traslacion(Tupla3f{5.0,0.0,0.0}));
+
+  agregar( MAT_Rotacion(180, 0, 1,0));
   agregar(new MaterialPeonMadera());
   agregar(new MallaRevol("../plys/peon.ply",30,true,false,true));
 }
 Peones::PeonBlanco::PeonBlanco(){
   ponerIdentificador(3);
   agregar(MAT_Traslacion(Tupla3f{5.0,0.0,0.0}));
+
+  agregar( MAT_Rotacion(180, 0, 1,0));
   agregar(new MaterialPeonBlanco());
-  agregar(new MallaRevol("../plys/peon.ply",30,true,true,true));
+  agregar(new MallaRevol("../plys/peon.ply",30,true,false,true));
 }
 Peones::PeonNegro::PeonNegro(){
   ponerIdentificador(4);
+
   agregar(MAT_Traslacion(Tupla3f{5.0,0.0,0.0}));
+
+  agregar( MAT_Rotacion(180, 0, 1,0));
   agregar(new MaterialPeonNegro);
-  agregar(new MallaRevol("../plys/peon.ply",30,true,true,true));
+  agregar(new MallaRevol("../plys/peon.ply",30,true,false,true));
 }
 Peones::Peones(){
   ponerIdentificador(5);
@@ -377,7 +396,7 @@ CocaCola::Cuerpo::Cuerpo(){
 CocaCola::TapaArriba::TapaArriba () {
   ponerIdentificador(-1);
   agregar( new MaterialTapasLata() );
-  agregar( new MallaRevol("../plys/lata-psup.ply", 30, false, true, true) );
+  agregar( new MallaRevol("../plys/lata-psup.ply", 30, false, false, true) );
 }
 
 CocaCola::TapaAbajo::TapaAbajo () {
@@ -716,9 +735,6 @@ Muneco::Muneco()
 
   calcularCentroOC();
 
-  cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACentro figura" << leerCentroOC() << endl;
-
-
  }
 
 SegmentoCola::SegmentoCola(){
@@ -738,6 +754,7 @@ Cola::Cola(){
   agregar(MAT_Traslacion(0.0 , 1.0, 0.5));
   agregar(MAT_Rotacion(90, 1, 0 ,0));
   float escalado = 0.8;
+  agregar(new MaterialPeonNegro);
   Esfera* esfera = new Esfera(20, 20, false, true, false);
   SegmentoCola* sg = new SegmentoCola();
   CustomCilindro* c = new CustomCilindro(2, 20, true, true, escalado, false);
@@ -912,4 +929,32 @@ ejercicio2::ejercicio2(){
   parametros.push_back(rotacion_2);
   parametros.push_back(rotacionb_1);
   parametros.push_back(rotacion_3);
+}
+
+
+Moneda::Moneda(){
+  agregar(MAT_Rotacion(90,1,0,0));
+  agregar(MAT_Escalado(1.0, 0.03, 1.0));
+  agregar(new BordeMoneda());
+
+  agregar(MAT_Rotacion(180, 0, 0, 1));
+  agregar(new CaraMoneda());
+  agregar(MAT_Rotacion(-180, 0, 0, 1));
+  agregar(MAT_Traslacion(0.0, 1.0, 0.0));
+  agregar(new CaraMoneda());
+}
+
+BordeMoneda::BordeMoneda(){
+  agregar( new MaterialBordeMoneda());
+  agregar(new Cilindro(4, 21, false, false, true));
+}
+
+CaraMoneda::CaraMoneda(){
+  agregar(new MaterialCaraMoneda());
+  agregar(new Disco(20));
+}
+
+EsferaTest::EsferaTest(){
+  agregar( new MaterialTest());
+  agregar(new Esfera(30, 30, true, false, true));
 }

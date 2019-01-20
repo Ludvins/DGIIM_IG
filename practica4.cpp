@@ -1,7 +1,7 @@
 // *********************************************************************
 // **
 // ** Informática Gráfica, curso 2016-17
-// ** Práctica 2  (implementación)
+// ** Práctica 4  (implementación)
 // **
 // *********************************************************************
 
@@ -17,30 +17,59 @@ using namespace std ;
 // COMPLETAR: práctica 4: declaración de variables de la práctica 4 (static)
 // ....
 
+void DibujarEscena();
+
 string p4_peon_file = "../plys/peon.ply";
 string p4_lata_file = "../plys/lata-pcue.ply";
 string p4_lata_inf = "../plys/lata-pinf.ply";
 string p4_lata_sup = "../plys/lata-psup.ply";
-uint p4_resolucion_objs = 4;
 static unsigned objetoActivo4 = 0;
-static constexpr int numObjetos4 = 2;
-static NodoGrafoEscena* objetos4[numObjetos4] = {nullptr, nullptr};
-
+static constexpr int numObjetos4 = 4;
+static NodoGrafoEscena* objetos4[numObjetos4] = {nullptr, nullptr, nullptr, nullptr};
+const VectorRGB rojo = {1.0, 0.0, 0.0, 1.0};
 ColeccionFuenteP4 p4_fuentes;
-unsigned p4_angulo_actual = 0;
 unsigned p4_fuente_activa = 0;
+unsigned p4_angulo_actual = 0;
 
+// MaterialCambiante* m = nullptr;
+// Matriz4f rotacion = MAT_Rotacion(10, 0, 0, 1);
+// ColFuentesLuz* col_test = nullptr;
+// FuenteLuzDireccional* f1 = new FuenteLuzDireccional(45, 45, rojo);
+// unsigned ident_f1 = 0;
+// bool f1_activada = false;
+// FuenteLuzPosicional* f2 = new FuenteLuzPosicional({ -1.825,1.825,1.825}, rojo);
+// unsigned ident_f2 = 1;
+// bool f2_activada = false;
 
-// ---------------------------------------------------------------------
+// // ---------------------------------------------------------------------
 // Función para implementar en la práctica 4 para inicialización.
 // Se llama una vez al inicio, cuando ya se ha creado la ventana e
 // incializado OpenGL.
 
 void P4_Inicializar(  )
 {
+  //col_test = new ColFuentesLuz();
+  //col_test->insertar(f1);
+  //col_test->insertar(f2);
+  // m = new MaterialCambiante(
+  //                           {0.314, 0.784, 0.471},
+  //                           {1.0,0.8,0.0},
+  //                           0.0,
+  //                           0.0,
+  //                           0.6,
+  //                           0.6,
+  //                           0.4,
+  //                           0.4,
+  //                           10,
+  //                           10
+  //                          );
 
    cout << "Creando objetos de la práctica 4 .... " << flush ;
    objetos4[0] = new EscenaP4();
+   //objetos4[1] = new Test(m);
+   //objetos4[2] = new Moneda();
+   //objetos4[3] = new CuboColores();
+   //objetos4[3] = new EsferaTest();
 
    cout << "hecho." << endl << flush ;
 }
@@ -53,16 +82,36 @@ void P4_Inicializar(  )
 //    entre el grado de libertad o incrementar/decrementar valores
 //  - devuelve 'false' si la tecla no se usa en esta práctica (no ha
 //    cambiado nada)
-
 bool P4_FGE_PulsarTeclaCaracter( unsigned char tecla )
 {
    bool res = false  ; // valor devuelto: es true solo cuando se ha procesado alguna tecla
 
    switch ( toupper( tecla ) )
    {
+   // case 'L':
+   //   glEnable(GL_LIGHTING);
+   //   col_test->activar(ident_f1);
+   //   f1_activada = true;
+   //   res = true;
+   //   break;
+
+   // case 'J':
+   //   glEnable(GL_LIGHTING);
+   //   col_test->activar(ident_f2);
+   //   f2_activada = true;
+     // res = true;
+   //   break;
+
+   // case 'I':
+   //   f2->posicion = rotacion*f2->posicion;
+   //   res = true;
+   //   break;
+   // case 'H':
+   //   m->cambiar();
+   //   res = true;
+   //   break;
 
    case 'O' :
-
      objetoActivo4 = (objetoActivo4+1) % numObjetos4 ;
      cout << "Práctica 4: nuevo objeto activo es: " << objetoActivo4;
      if ( objetos4[objetoActivo4] != nullptr )
@@ -117,11 +166,9 @@ bool P4_FGE_PulsarTeclaCaracter( unsigned char tecla )
 
    default :
      break;
- 
-   return res ;
-
    }
 
+   return res ;
 }
 
 // ---------------------------------------------------------------------
@@ -136,6 +183,11 @@ void P4_DibujarObjetos( ContextoVis & cv )
    // ....
 
   p4_fuentes.activar();
+  //fuente_test_1->activar();
+
+  //if(f2_activada)
+  //  col_test->activar(ident_f2);
+
   if (objetos4[objetoActivo4] != nullptr)
     objetos4[objetoActivo4]->visualizarGL(cv);
 
