@@ -98,4 +98,10 @@ public:
   Disco(int num_perfiles);
 };
 
+class Dado : public MallaInd
+{
+public:
+  Dado();
+};
+
 #endif

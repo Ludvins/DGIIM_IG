@@ -371,6 +371,7 @@ Peones::PeonNegro::PeonNegro(){
 }
 Peones::Peones(){
   ponerIdentificador(5);
+  agregar(MAT_Traslacion(0.0, 1.0, 0.0));
   agregar(new PeonMadera());
   agregar( MAT_Rotacion(-45,0,1,0));
   agregar(new PeonBlanco());
@@ -382,7 +383,7 @@ Peones::Peones(){
 
 CocaCola::CocaCola(){
   ponerIdentificador(6);
-  agregar(MAT_Escalado(1.5,1.5,1.5));
+  agregar(MAT_Escalado(8,8,8));
   agregar(new TapaArriba());
   agregar(new Cuerpo());
   agregar(new TapaAbajo());
