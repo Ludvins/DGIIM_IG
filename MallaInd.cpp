@@ -143,6 +143,24 @@ void MallaInd::visualizarDE_NT ( ContextoVis& cv ){
 
 }
 
+// ------------------------------------------------------------------------------
+
+void MallaInd::visualizarDE_MI_Plano(ContextoVis & cv)
+{
+  glBegin(GL_TRIANGLES);
+
+  for (unsigned i = 0; i < caras.size(); i++) {
+    glNormal3fv(nor_caras[i]);
+    for (unsigned j = 0; j < 3; j++) {
+      unsigned iv = caras[i](j);
+      if (texturas.size() > 0) glTexCoord2fv(texturas[iv]);
+      if (col_ver.size() > 0) glColor3fv(col_ver[iv]);
+      glVertex3fv(vertices[iv]);
+    }
+  }
+
+  glEnd();
+}
 // ----------------------------------------------------------------------------
 
 void MallaInd::visualizarVBOs_NT( ContextoVis& cv)
@@ -339,7 +357,9 @@ void MallaInd::visualizarGL( ContextoVis & cv )
   case modoColorNodoPlano:
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glShadeModel(GL_FLAT);
-    cv.usarVBOs ? visualizarVBOs_NT(cv) : visualizarDE_NT(cv);
+    if (cv.usarVBOs)
+      std::cout << "Este modo de visualización no admite VBO" << std::endl;
+    visualizarDE_MI_Plano(cv);
     break;
 
   case modoColorNodoSuave:
@@ -483,4 +503,6 @@ Dado::Dado()
 
   calcular_normales();
 }
+
+
 // *****************************************************************************

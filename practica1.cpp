@@ -75,3 +75,51 @@ void P1_DibujarObjetos( ContextoVis & cv )
 
 
 }
+
+
+
+// void Ej2(int n){
+//   float alpha = 360.0 / n;
+
+//   Matriz4f m = MAT_Rotacion(alpha, 0,0,1);
+
+//   auto p = Tupla3f(1,0,0);
+
+//   std::vector<Tupla3f> v;
+//   for(unsigned i = 0; i<n; ++i){
+//     v.push_back(p);
+//     p = m*p;
+//   }
+
+//   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//   glEnableClientState(GL_VERTEX_ARRAY);
+//   glColor3f(0,0,1);
+//   glVertexPointer(3, GL_FLOAT, 0, v.data());
+//   glDrawArrays(GL_POLYGON,0 ,n);
+//   glDisableClientState(GL_VERTEX_ARRAY);
+
+//   auto u = (1.0 - 0.1)/n;
+
+//   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+//   for(unsigned i=0; i< n ; ++i){
+//     auto r = 1.0 - i*u;
+//     auto p0 = v[i%n] * r;
+//     auto p1 = v[(i+1)%n] * r;
+//     glColor3f(0.5,0.8,1.0);
+//     glBegin(GL_TRIANGLES);
+//     glVertex3fv(p0);
+//     glVertex3fv(p1);
+//     glVertex3fv(Tupla3f(0.0,0.0,0.0));
+//     glEnd();
+
+//     glColor3f(0,0,1);
+//     glBegin(GL_LINES);
+//     glVertex3fv(p0);
+//     glVertex3fv(p1);
+//     glEnd();
+//   }
+
+//   glDisable(GL_DEPTH_TEST);
+
+// }

@@ -54,7 +54,7 @@ protected:
 
   void visualizarDE_NT (ContextoVis& cv);
   void visualizarVBOs_NT (ContextoVis& cv);
-
+  void visualizarDE_MI_Plano(ContextoVis& cv);
   // Inicializar VBO
   void crearVBOs ( );
 

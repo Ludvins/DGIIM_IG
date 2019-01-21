@@ -115,7 +115,7 @@ bool P5_FGE_PulsarTeclaCaracter(  unsigned char tecla )
    {
       case 'C':
         camaraActiva = (camaraActiva + 1) % numCamaras;
-        camaras[camaraActiva]->activar(); // ?
+        camaras[camaraActiva]->activar();
         cout << "práctica 5: nueva cámara activa es " << camaraActiva << endl;
 
         break ;
@@ -291,8 +291,8 @@ bool P5_FGE_RatonMovidoPulsado( int x, int y )
       P5_RatonArrastradoHasta( x, viewport.alto-y );
       return true ;
    }
-   else
-      return false ;
+
+   return false ;
 }
 // ---------------------------------------------------------------------
 
