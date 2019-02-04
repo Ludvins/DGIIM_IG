@@ -14,25 +14,41 @@ Arch Linux 64-bit con núcleo 4.18.12-arch1-1-ARCH
 
 Teclas que se pueden utilizar:
 q/Q - Permite salir del programa.
+
 p/P - Permite ir a la siguiente práctica, despueés de la última se va a la primera.
-+ - Permite acercar la cámara
-- - Permite alejar la cámara
+
+`+`  - Permite acercar la cámara
+
+`-` - Permite alejar la cámara
+
 v/V - P1-P4 Permite cambiar entre modo inmediato y modo diferido.
       P5 - Permite cambiar entre las distintas cámaras.
+
 m/M - Permite cambiar el modo de visualizacion en un ciclo.
+
 o/O - Permite cambiar entre objetos dentro de la misma práctica.
+
 g/G - P3 - Permite seleccionar los diferentes parámetros.
     - P4 - Permite cambiar entre el angulo de la longitud y el de la latitud.
+
 a/A - Permite activar o desactivar las animaciones
-> - P3 - Permite incrementar un parametro o su velocidad dependiendo de si las animaciones se encuentran activadas.
+
+`>` - P3 - Permite incrementar un parametro o su velocidad dependiendo de si las animaciones se encuentran activadas.
     P4 - Permite incrementar el angulo de las fuentes de luces direccionales.
-< - P3 - Permite decrementar un parámetro o su velocidad dependiendo de si las animaciones se encientran activadas.
-  - P4 - Permite decrementar el ángulo de las fuentes de luces direccionales.
+
+`<` - P3 - Permite decrementar un parámetro o su velocidad dependiendo de si las animaciones se encientran activadas.
+    P4 - Permite decrementar el ángulo de las fuentes de luces direccionales.
+
 r/R - Permite resetear todos los parámetros de la práctica 3.
+
 f/F - En la práctica 4, permite cambiar entre las fuentes de luces disponibles.
+
 c/C - En la práctica 5, permite cambiar entre las diferentes cámaras.
+
 Flechas - Permiten mover la cámara.
+
 Click Izquierdo - Permite seleccionar el punto de atencion en la práctica 5.
+
 Click Derecho (Arrastrar) - Permite mover la camará con el ratón mientras se mantenga pulsado (práctica 5).
 
 
@@ -57,7 +73,7 @@ He añadido un método a la clase MallaPLY que devuelve el tamaño de la malla, 
 
 == Cambios en el código ==
 
-- Se añade un método virtual a Objeto3D llamado 'fijarColorNodo', para proporcionar compatibilidad
+Se añade un método virtual a Objeto3D llamado 'fijarColorNodo', para proporcionar compatibilidad
 en la implementación (recursiva) del método homónimo en NodoGrafoEscena.
 
 == Comentarios P4 ==
